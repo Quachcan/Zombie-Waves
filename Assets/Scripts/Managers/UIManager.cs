@@ -1,71 +1,74 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : MonoBehaviour
+namespace Managers
 {
-    public static UIManager Instance { get; private set; }
-
-    [Header("Panels")]
-    public GameObject mainMenuPanel;
-    public GameObject settingsPanel;
-    public GameObject pausePanel;
-
-    [Header("Texts")]
-    public Text scoreText;
-    public Text healthText;
-
-    private void Awake()
+    public class UIManager : MonoBehaviour
     {
-        if (Instance != null && Instance != this)
+        public static UIManager Instance { get; private set; }
+
+        [Header("Panels")]
+        public GameObject mainMenuPanel;
+        public GameObject settingsPanel;
+        public GameObject pausePanel;
+
+        [Header("Texts")]
+        public Text scoreText;
+        public Text healthText;
+
+        private void Awake()
         {
-            Destroy(gameObject);
-            return;
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
 
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-    }
-
-    // Show a specific panel
-    public void ShowPanel(GameObject panel)
-    {
-        HideAllPanels();
-        panel.SetActive(true);
-    }
-
-    // Hide all panels
-    public void HideAllPanels()
-    {
-        if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
-        if (settingsPanel != null) settingsPanel.SetActive(false);
-        if (pausePanel != null) pausePanel.SetActive(false);
-    }
-
-    // Update the score text
-    public void UpdateScore(int score)
-    {
-        if (scoreText != null)
+        // Show a specific panel
+        public void ShowPanel(GameObject panel)
         {
-            scoreText.text = "Score: " + score;
+            HideAllPanels();
+            panel.SetActive(true);
         }
-    }
 
-    // Update the health text
-    public void UpdateHealth(int health)
-    {
-        if (healthText != null)
+        // Hide all panels
+        public void HideAllPanels()
         {
-            healthText.text = "Health: " + health;
+            if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
+            if (settingsPanel != null) settingsPanel.SetActive(false);
+            if (pausePanel != null) pausePanel.SetActive(false);
         }
-    }
 
-    // Toggle pause panel visibility
-    public void TogglePausePanel()
-    {
-        if (pausePanel != null)
+        // Update the score text
+        public void UpdateScore(int score)
         {
-            bool isActive = pausePanel.activeSelf;
-            pausePanel.SetActive(!isActive);
+            if (scoreText != null)
+            {
+                scoreText.text = "Score: " + score;
+            }
+        }
+
+        // Update the health text
+        public void UpdateHealth(int health)
+        {
+            if (healthText != null)
+            {
+                healthText.text = "Health: " + health;
+            }
+        }
+
+        // Toggle pause panel visibility
+        public void TogglePausePanel()
+        {
+            if (pausePanel != null)
+            {
+                bool isActive = pausePanel.activeSelf;
+                pausePanel.SetActive(!isActive);
+            }
         }
     }
 }

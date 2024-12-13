@@ -5,12 +5,13 @@ using Managers;
 using Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     [SerializeField]
-    private Player.PlayerMovement _playerMovement;
+    private Player.PlayerMovement playerMovement;
     
     private bool _isGameOver;
 

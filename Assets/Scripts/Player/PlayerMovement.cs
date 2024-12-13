@@ -15,9 +15,11 @@ namespace Player
        
        private Vector2 _currentMovementInput;
        private Vector3 _currentMovement;
+       
        private bool _isMovementPressed;
 
        private float _rotationSpeed = 15f;
+       
        public float movementSpeed = 5f;
 
        private void Awake()
