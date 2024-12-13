@@ -66,8 +66,7 @@ namespace EnemyScripts
                     return randomPosition;
                 }
             }
-
-            Debug.LogWarning("Failed to find valid spawn position.");
+            
             return Vector3.zero;
         }
 

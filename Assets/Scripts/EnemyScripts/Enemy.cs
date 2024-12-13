@@ -9,21 +9,21 @@ namespace EnemyScripts
     {
         private int _health;
 
-        public float distance;
-        
-        public Transform player;
-        private NavMeshAgent agent;
+        // public float distance;
+        //
+        // public Transform player;
+        // private NavMeshAgent agent;
 
         private void Awake()
         {
-            player = GameObject.FindGameObjectWithTag("Player").transform;
-            agent = GetComponentInChildren<NavMeshAgent>();
+            // player = GameObject.FindGameObjectWithTag("Player").transform;
+            // agent = GetComponentInChildren<NavMeshAgent>();
         }
 
         private void Update()
         {
-            distance = Vector3.Distance(transform.position, player.transform.position);
-            agent.SetDestination(player.position);
+            // distance = Vector3.Distance(transform.position, player.transform.position);
+            // agent.SetDestination(player.position);
         }
 
         public void TakeDamage(int damage)
