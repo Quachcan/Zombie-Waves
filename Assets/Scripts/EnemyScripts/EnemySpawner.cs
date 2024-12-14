@@ -45,7 +45,7 @@ namespace EnemyScripts
                     var enemyScript = enemy.GetComponent<Enemy>();
                     if (enemyScript != null)
                     {
-                        //enemyScript.health = config.health;
+                        //enemyScript._maxHealth = config.health;
                     }
                 }
             }
