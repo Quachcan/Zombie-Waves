@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using BulletScript;
 using EnemyScripts;
 using UnityEngine;
@@ -8,6 +9,12 @@ namespace Player
 {
     public class PlayerCombat : MonoBehaviour
     {
+        [Header("References")]
+        [SerializeField]
+        private Enemy targetEnemy;
+        [SerializeField]
+        private BulletPool bulletPool;
+        
         [Header("Combat Settings")]
         [SerializeField]
         private Transform firePoint;
@@ -19,58 +26,68 @@ namespace Player
         private float bulletLifeTime;
         [SerializeField]
         private float fireCooldown;
-        [SerializeField]
-        private Transform targetEnemy;
-        [SerializeField]
-        private BulletPool bulletPool;
-
-
+        [SerializeField] 
+        private int bulletDamage;
+        [SerializeField] 
+        private float attackRange;
+        
+        
+        private List<Enemy> enemiesInRange = new List<Enemy>();
+        
         private void Start()
         {
+            SphereCollider attackRangeCollider = gameObject.AddComponent<SphereCollider>();
+            attackRangeCollider.isTrigger = true;
+            attackRangeCollider.radius = attackRange;
             bulletPool = BulletPool.Instance;
         }
 
         // Update is called once per frame
         void Update()
         {
+
+            enemiesInRange.RemoveAll(enemy => enemy == null);
             if (fireCooldown > 0)
             {
                 fireCooldown -= Time.deltaTime;
             }
-            FindClosetEnemy();
+
+            targetEnemy = GetClosestEnemy();
+            
             if (targetEnemy != null)
             {
                 RotatePlayerTowardsTarget();
             }
 
-            if (targetEnemy != null && fireCooldown < 0)
+            if (fireCooldown <= 0 && targetEnemy != null)
             {
                 Shoot();
                 fireCooldown = fireRate;
             }
         }
 
-        private void FindClosetEnemy()
+        private Enemy GetClosestEnemy()
         {
-            Enemy[] enemies = FindObjectsOfType<Enemy>();
-            float closetDistance = Mathf.Infinity;
-            Transform closetTarget = null;
+            Enemy closestEnemy = null;
+            float closestDistance = Mathf.Infinity;
 
-            foreach (var enemy in enemies)
+            foreach (Enemy enemy in enemiesInRange)
             {
+                if(enemy == null) continue;
+                
                 float distance = Vector3.Distance(transform.position, enemy.transform.position);
-                if (distance < closetDistance)
+                if (distance < closestDistance)
                 {
-                    closetDistance = distance;
-                    closetTarget = enemy.transform;
+                    closestDistance = distance;
+                    closestEnemy = enemy;
                 }
             }
-            targetEnemy = closetTarget;
+            return closestEnemy;
         }
 
         private void RotatePlayerTowardsTarget()
         {
-            Vector3 direction = (targetEnemy.position - transform.position).normalized;
+            Vector3 direction = (targetEnemy.transform.position - transform.position).normalized;
             direction.y = 0;
             
             Quaternion lookRotation = Quaternion.LookRotation(direction);
@@ -79,46 +96,91 @@ namespace Player
 
         public bool HasTarget()
         {
-            return targetEnemy !=null;
+            if (targetEnemy == null)
+            {
+                return false;
+            }
+            if (!targetEnemy.gameObject.activeInHierarchy)
+            {
+                return false;
+            }
+            return true;
         }
 
         public Vector3 GetTargetDirection()
         {
             if (targetEnemy == null) return Vector3.zero;
-            Vector3 direction = (targetEnemy.position - transform.position).normalized;
+            Vector3 direction = (targetEnemy.transform.position - transform.position).normalized;
             direction.y = 0;
             return direction;
         }
 
         private void Shoot()
         {
-            if (firePoint == null || targetEnemy == null)
+            Enemy closetEnemy = GetClosestEnemy();
+            
+            if (closetEnemy ==null) return;
+            
+            Vector3 directionToTarget = (targetEnemy.transform.position - transform.position).normalized;
+            directionToTarget.y = 0;
+            
+            float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
+
+            if (angleToTarget > 5f)
             {
                 return;
             }
             
-            Vector3 direction = (targetEnemy.position - firePoint.position).normalized;
+            RotatePlayerTowardsTarget();
             
             GameObject bullet = bulletPool.GetBullet();
-            if (bullet == null)
-            {
-                return;
-            }
             bullet.transform.position = firePoint.position;
-            bullet.transform.rotation = Quaternion.LookRotation(direction);
+            bullet.transform.rotation = Quaternion.LookRotation(closetEnemy.transform.position - firePoint.position);
             bullet.SetActive(true);
             
             Bullet bulletScript = bullet.GetComponent<Bullet>();
             if (bulletScript != null)
             {
-                bulletScript.SetTarget(targetEnemy);
+                bulletScript.Initialize(targetEnemy.transform, bulletDamage);
                 StartCoroutine(bulletScript.BulletCoroutineLifeTime(bulletLifeTime));
             }
             
             Rigidbody rb = bullet.GetComponent<Rigidbody>();
             if (rb != null)
             {
-                rb.velocity = direction * bulletSpeed;
+                rb.velocity = (closetEnemy.transform.position - firePoint.position).normalized * bulletSpeed;
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.CompareTag("Enemy"))
+            {
+                Enemy enemy = other.GetComponent<Enemy>();
+                if (enemy != null && !enemiesInRange.Contains(enemy))
+                {
+                    enemiesInRange.Add(enemy);
+                }
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.CompareTag("Enemy"))
+            {
+                Enemy enemy = other.GetComponent<Enemy>();
+                if (enemy != null && enemiesInRange.Contains(enemy))
+                {
+                    enemiesInRange.Remove(enemy);
+                }
+            }
+        }
+
+        public void RemoveEnemy(Enemy enemy)
+        {
+            if (enemiesInRange.Contains(enemy))
+            {
+                enemiesInRange.Remove(enemy);
             }
         }
     }

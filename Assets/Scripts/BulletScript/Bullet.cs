@@ -1,22 +1,18 @@
 using System.Collections;
+using EnemyScripts;
 using UnityEngine;
 
 namespace BulletScript
 {
     public class Bullet : MonoBehaviour
     {
-        [SerializeField]
-        private Transform target;
+        [SerializeField] private Transform target;
         [SerializeField] private int damage;
 
-        public void SetTarget(Transform target)
+        public void Initialize(Transform target, int damage)
         {
             this.target = target;
-        }
-
-        private void ReturnToPool()
-        {
-            BulletPool.Instance.ReturnBullet(gameObject);
+            this.damage = damage;
         }
         
         public IEnumerator BulletCoroutineLifeTime(float lifeTime)
@@ -27,14 +23,20 @@ namespace BulletScript
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.transform == target)
+            if (other.CompareTag("Enemy"))
             {
-                Debug.Log("Bullet Hit: " + target.name);
-                StopAllCoroutines();
-                BulletPool.Instance.ReturnBullet(gameObject);
+                Enemy enemy = other.GetComponent<Enemy>();
+                if (enemy != null)
+                {
+                    enemy.TakeDamage(damage);
+                }
+                ReturnToPool();
             }
         }
-    
-    
+        
+        private void ReturnToPool()
+        {
+            BulletPool.Instance.ReturnBullet(gameObject);
+        }
     }
 }

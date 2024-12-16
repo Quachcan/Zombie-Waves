@@ -1,4 +1,5 @@
 using System;
+using Player;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Serialization;
@@ -25,7 +26,6 @@ namespace EnemyScripts
         public void TakeDamage(int damage)
         {
             _currentHealth -= damage;
-            Debug.Log($"{name} took {damage} damage, remaining health: {_currentHealth}");
 
             if (_currentHealth <= 0)
             {
@@ -35,7 +35,11 @@ namespace EnemyScripts
 
         private void Die()
         {
-            Debug.Log($"{name} died.");
+            PlayerCombat playerCombat = FindObjectOfType<PlayerCombat>();
+            if (playerCombat != null)
+            {
+                playerCombat.RemoveEnemy(this);
+            }
             Destroy(gameObject);
         }
     }

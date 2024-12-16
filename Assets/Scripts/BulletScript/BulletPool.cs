@@ -16,7 +16,6 @@ namespace BulletScript
             if (Instance == null)
             {
                 Instance = this;
-                Debug.Log("Pool created");
             }
             else
             {

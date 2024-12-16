@@ -15,17 +15,19 @@ namespace Player
        private Vector3 _currentMovement;
        
        private bool _isMovementPressed;
-
-       private float _rotationSpeed = 15f;
-        
+       [SerializeField]
+       private float _rotationSpeed = 30f;
+       
        public float movementSpeed = 5f;
+       [SerializeField]
+       private bool isShooting;
 
        private void Awake()
        {
            _playerControls = new PlayerControls();
            _characterController = GetComponent<CharacterController>();
            _animator = GetComponentInChildren<Animator>();
-           
+           _playerCombat = GetComponent<PlayerCombat>();
            AnimationManager.Instance.InitializeAnimator(_animator, "IsMoving");
        }
 
@@ -47,30 +49,53 @@ namespace Player
        
        private void Update()
        {
-           HandleRotation();
+           if (_playerCombat != null)
+           {
+               isShooting = _playerCombat.HasTarget();
+           }
+
+           if (isShooting && _isMovementPressed)
+           {
+               HandleCombatRotation();
+           }
+           else if (!isShooting && _isMovementPressed)
+           {
+               HandleMovementRotation();
+           }
            HandleAnimation();
-           _characterController.Move(_currentMovement * (movementSpeed * Time.deltaTime));
+           HandleMovement();
        }
 
-       private void HandleRotation()
+       private void HandleMovement()
        {
-           Vector3 positionToLookAt;
+           Vector3 movement = _currentMovement;
+           movement.y = -1f; // Gravity
+           _characterController.Move(movement * (movementSpeed * Time.deltaTime));
+       }
+       
+       private void HandleCombatRotation()
+       {
+           if(_playerCombat == null || !_playerCombat.HasTarget()) return;
 
-           if (_playerCombat != null && _playerCombat.HasTarget())
-           {
-               positionToLookAt = _playerCombat.GetTargetDirection();
-           }
-           else if (_isMovementPressed)
-           {
-               positionToLookAt.x = _currentMovement.x;
-               positionToLookAt.y = 0;
-               positionToLookAt.z = _currentMovement.z;
-           }
-           else
-           {
-               return;
-           }
+           Vector3 direction = _playerCombat.GetTargetDirection();
+           Quaternion targetRotation = Quaternion.LookRotation(direction);
+           transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, _rotationSpeed * Time.deltaTime);
+       }
+
+       private void HandleMovementRotation()
+       {
+           //if (!_isMovementPressed) return;
            
+           Vector3 positionToLookAt;
+           positionToLookAt.x = _currentMovement.x;
+           positionToLookAt.y = 0;
+           positionToLookAt.z = _currentMovement.z;
+           
+           if (positionToLookAt.sqrMagnitude > 0.01f) // Kiểm tra hướng hợp lệ
+           {
+               Quaternion targetRotation = Quaternion.LookRotation(positionToLookAt);
+               transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
+           }
        }
 
        private void HandleAnimation()
