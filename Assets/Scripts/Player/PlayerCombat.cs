@@ -1,7 +1,8 @@
-using System;
+
+using BulletScript;
 using EnemyScripts;
 using UnityEngine;
-using UnityEngine.Serialization;
+
 
 namespace Player
 {
@@ -26,10 +27,6 @@ namespace Player
 
         private void Start()
         {
-            if (bulletPool == null)
-            {
-                Debug.Log("No bullet pool assigned");
-            }
             bulletPool = BulletPool.Instance;
         }
 
@@ -80,11 +77,23 @@ namespace Player
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 10f);
         }
 
+        public bool HasTarget()
+        {
+            return targetEnemy !=null;
+        }
+
+        public Vector3 GetTargetDirection()
+        {
+            if (targetEnemy == null) return Vector3.zero;
+            Vector3 direction = (targetEnemy.position - transform.position).normalized;
+            direction.y = 0;
+            return direction;
+        }
+
         private void Shoot()
         {
             if (firePoint == null || targetEnemy == null)
             {
-                Debug.LogWarning("Cannot Shoot : Missing bullet prefab, target or fire point");
                 return;
             }
             
@@ -93,7 +102,6 @@ namespace Player
             GameObject bullet = bulletPool.GetBullet();
             if (bullet == null)
             {
-                Debug.LogError("BulletPool returned null bullet.");
                 return;
             }
             bullet.transform.position = firePoint.position;
@@ -112,8 +120,6 @@ namespace Player
             {
                 rb.velocity = direction * bulletSpeed;
             }
-            
-            Debug.Log("Player shot a bullet to: " + targetEnemy.name);
         }
     }
 }

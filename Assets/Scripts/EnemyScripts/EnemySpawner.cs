@@ -1,14 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace EnemyScripts
 {
     public class EnemySpawner : MonoBehaviour
     {
         [Header("Enemy Configurations")] 
-        public List<EnemyConfigSO> enemyConfigs;
+        public List<EnemyConfigSo> enemyConfigs;
         
         [Header("Spawn Settings")]
         public LayerMask whatIsGround; 
@@ -31,7 +30,7 @@ namespace EnemyScripts
             }
         }
 
-        private IEnumerator SpawnEnemyRoutine(EnemyConfigSO config)
+        private IEnumerator SpawnEnemyRoutine(EnemyConfigSo config)
         {
             while (true)
             {

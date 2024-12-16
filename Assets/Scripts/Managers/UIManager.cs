@@ -36,7 +36,7 @@ namespace Managers
         }
 
         // Hide all panels
-        public void HideAllPanels()
+        private void HideAllPanels()
         {
             if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
             if (settingsPanel != null) settingsPanel.SetActive(false);

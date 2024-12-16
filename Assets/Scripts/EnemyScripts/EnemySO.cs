@@ -3,7 +3,7 @@ using UnityEngine;
 namespace EnemyScripts
 {
     [CreateAssetMenu(fileName = "EnemyConfig", menuName = "New Enemy/EnemyConfig")]
-    public class EnemyConfigSO : ScriptableObject
+    public class EnemyConfigSo : ScriptableObject
     {
         public GameObject enemyPrefab; 
         public float spawnRate = 1f; 

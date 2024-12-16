@@ -1,7 +1,4 @@
-using System;
 using Managers;
-using Managers.Input_Manager;
-using Managers.Player_Manager;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +9,7 @@ namespace Player
        private PlayerControls _playerControls;
        private CharacterController _characterController;
        private Animator _animator;
+       private PlayerCombat _playerCombat;
        
        private Vector2 _currentMovementInput;
        private Vector3 _currentMovement;
@@ -19,7 +17,7 @@ namespace Player
        private bool _isMovementPressed;
 
        private float _rotationSpeed = 15f;
-       
+        
        public float movementSpeed = 5f;
 
        private void Awake()
@@ -57,17 +55,20 @@ namespace Player
        private void HandleRotation()
        {
            Vector3 positionToLookAt;
-           
-           positionToLookAt.x = _currentMovement.x;
-           positionToLookAt.y = 0;
-           positionToLookAt.z = _currentMovement.z;
-           
-           Quaternion currentRotation = transform.rotation;
 
-           if (_isMovementPressed)
+           if (_playerCombat != null && _playerCombat.HasTarget())
            {
-               Quaternion targetRotation = Quaternion.LookRotation(positionToLookAt);
-               transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, Time.deltaTime * _rotationSpeed);
+               positionToLookAt = _playerCombat.GetTargetDirection();
+           }
+           else if (_isMovementPressed)
+           {
+               positionToLookAt.x = _currentMovement.x;
+               positionToLookAt.y = 0;
+               positionToLookAt.z = _currentMovement.z;
+           }
+           else
+           {
+               return;
            }
            
        }
