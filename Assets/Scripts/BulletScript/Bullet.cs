@@ -1,23 +1,34 @@
 using System.Collections;
-using EnemyScripts;
 using UnityEngine;
 
 namespace BulletScript
 {
     public class Bullet : MonoBehaviour
     {
-        [SerializeField] private Transform target;
-        [SerializeField] private int damage;
-
-        public void Initialize(Transform target, int damage)
-        {
-            this.target = target;
-            this.damage = damage;
-        }
+        [Header("Bullet Settings")]
+        [SerializeField] private float speed = 10f;
+        [SerializeField] private int damage = 1;
+        [SerializeField] private float lifetime = 3f;
         
-        public IEnumerator BulletCoroutineLifeTime(float lifeTime)
+        private Vector3 direction;
+
+        public void Initialize(Vector3 shootDirection, int bulletDamage)
         {
-            yield return new WaitForSeconds(0.5f);
+            this.direction = shootDirection.normalized;
+            this.damage = bulletDamage;
+
+            StopAllCoroutines();
+            StartCoroutine(BulletCoroutineLifeTime());
+        }
+
+        private void Update()
+        {
+            transform.position += direction * (speed * Time.deltaTime);
+        }
+
+        private IEnumerator BulletCoroutineLifeTime()
+        {
+            yield return new WaitForSeconds(lifetime);
             ReturnToPool();
         }
 
@@ -25,15 +36,16 @@ namespace BulletScript
         {
             if (other.CompareTag("Enemy"))
             {
-                Enemy enemy = other.GetComponent<Enemy>();
+                EnemyScripts.Enemy enemy = other.GetComponent<EnemyScripts.Enemy>();
                 if (enemy != null)
                 {
                     enemy.TakeDamage(damage);
                 }
+
                 ReturnToPool();
             }
         }
-        
+
         private void ReturnToPool()
         {
             BulletPool.Instance.ReturnBullet(gameObject);

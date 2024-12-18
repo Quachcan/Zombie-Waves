@@ -5,51 +5,56 @@ namespace BulletScript
 {
     public class BulletPool : MonoBehaviour
     {
-        public static BulletPool Instance { get; private set; }
-        public GameObject bulletPrefab;
-        public int bulletPoolSize;
-    
-        private readonly Queue<GameObject> _bulletPool = new Queue<GameObject>();
-        // Start is called before the first frame update
+        public static BulletPool Instance;
+
+        [Header("Pool Settings")]
+        [SerializeField] private GameObject bulletPrefab;
+        [SerializeField] private int poolSize = 20;
+
+        private Queue<GameObject> bulletPool = new Queue<GameObject>();
+
         private void Awake()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
+            if (Instance != null && Instance != this)
             {
                 Destroy(gameObject);
+                return;
             }
+
+            Instance = this;
             InitializePool();
         }
 
         private void InitializePool()
         {
-            for (int i = 0; i < bulletPoolSize; i++)
+            for (int i = 0; i < poolSize; i++)
             {
-                GameObject bullet = Instantiate(bulletPrefab, transform);
+                GameObject bullet = Instantiate(bulletPrefab);
                 bullet.SetActive(false);
-                _bulletPool.Enqueue(bullet);
+                bulletPool.Enqueue(bullet);
             }
         }
 
         public GameObject GetBullet()
         {
-            if (_bulletPool.Count > 0)
+            if (bulletPool.Count > 0)
             {
-                return _bulletPool.Dequeue();
+                GameObject bullet = bulletPool.Dequeue();
+                bullet.SetActive(true);
+                return bullet;
             }
-        
-            GameObject bullet = Instantiate(bulletPrefab);
-            bullet.SetActive(false);
-            return bullet;
+            else
+            {
+                // Nếu hết đối tượng trong Pool, tạo mới (tùy chọn)
+                Debug.LogWarning("Bullet Pool is empty. Expanding pool...");
+                return Instantiate(bulletPrefab);
+            }
         }
 
         public void ReturnBullet(GameObject bullet)
         {
             bullet.SetActive(false);
-            _bulletPool.Enqueue(bullet);
+            bulletPool.Enqueue(bullet);
         }
     }
 }

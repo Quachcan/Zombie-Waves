@@ -1,8 +1,9 @@
 using Managers;
+using PlayerScripts;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Player
+namespace PlayerScripts
 {
     public class PlayerMovement : MonoBehaviour
     {

@@ -1,5 +1,5 @@
 using System;
-using Player;
+using PlayerScripts;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Serialization;
@@ -9,25 +9,42 @@ namespace EnemyScripts
     public class Enemy : MonoBehaviour
     {
         [SerializeField]
+        private EnemyMovement enemyMovement;
+        [SerializeField]
         private int maxHealth;
-        private int _currentHealth;
-        
+        [SerializeField]
+        private int currentHealth;
 
+        private Transform playerTransform;
+        private PlayerHealth playerHealth;
+
+        public void Initialize(Transform player, PlayerHealth health)
+        {
+            playerTransform = player;
+            playerHealth = health;
+        }
         private void Awake()
         {
-            _currentHealth = maxHealth;
+            currentHealth = maxHealth;
+            enemyMovement = GetComponent<EnemyMovement>();
         }
 
-        private void Update()
+        private void OnEnable()
         {
-            
+            PlayerCombat.Instance.RegisterEnemy(this);
+        }
+
+        private void OnDisable()
+        {
+            PlayerCombat.Instance.UnregisterEnemy(this);
         }
 
         public void TakeDamage(int damage)
         {
-            _currentHealth -= damage;
+            currentHealth -= damage;
+            currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-            if (_currentHealth <= 0)
+            if (currentHealth <= 0)
             {
                 Die();
             }
@@ -35,12 +52,20 @@ namespace EnemyScripts
 
         private void Die()
         {
-            PlayerCombat playerCombat = FindObjectOfType<PlayerCombat>();
-            if (playerCombat != null)
-            {
-                playerCombat.RemoveEnemy(this);
-            }
+            PlayerCombat.Instance.UnregisterEnemy(this);
             Destroy(gameObject);
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.CompareTag("Player") && enemyMovement.distance <= 1.5f)
+            {
+                PlayerHealth player = other.GetComponent<PlayerHealth>();
+                if (player != null)
+                {
+                    player.TakeDamage(1);
+                }
+            }
         }
     }
 }

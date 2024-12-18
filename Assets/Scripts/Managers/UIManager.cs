@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,10 +12,16 @@ namespace Managers
         public GameObject mainMenuPanel;
         public GameObject settingsPanel;
         public GameObject pausePanel;
+        public GameObject gameOverPanel;
 
-        [Header("Texts")]
+        [Header("Scores")]
         public Text scoreText;
-        public Text healthText;
+        [Header("Images")]
+        public Image[] hearts;
+        public Sprite fullHeart;
+        public Sprite emptyHeart;
+
+        public int health;
 
         private void Awake()
         {
@@ -41,6 +48,7 @@ namespace Managers
             if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
             if (settingsPanel != null) settingsPanel.SetActive(false);
             if (pausePanel != null) pausePanel.SetActive(false);
+            if (gameOverPanel != null) gameOverPanel.SetActive(false);
         }
 
         // Update the score text
@@ -53,11 +61,16 @@ namespace Managers
         }
 
         // Update the health text
-        public void UpdateHealth(int health)
+        public void UpdateHealth()
         {
-            if (healthText != null)
+            foreach (Image img in hearts)
             {
-                healthText.text = "Health: " + health;
+                img.sprite = emptyHeart;
+            }
+
+            for (int i = 0; i < health && i < hearts.Length; i++)
+            {
+                hearts[i].sprite = fullHeart;
             }
         }
 
@@ -69,6 +82,16 @@ namespace Managers
                 bool isActive = pausePanel.activeSelf;
                 pausePanel.SetActive(!isActive);
             }
+        }
+
+        public void ShowGameOverPanel()
+        {
+            gameOverPanel.SetActive(true);
+        }
+
+        public void HideGameOverPanel()
+        {
+            gameOverPanel.SetActive(false);
         }
     }
 }

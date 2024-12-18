@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Player;
+using PlayerScripts;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour

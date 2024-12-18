@@ -1,52 +1,64 @@
 using UnityEngine;
 
-
-
-
-public class GameManager : MonoBehaviour
+namespace Managers
 {
-    public static GameManager Instance { get; private set; }
-    [SerializeField]
-    private Player.PlayerMovement playerMovement;
-    
-    private bool _isGameOver;
-
-    private void Awake()
+    public class GameManager : MonoBehaviour
     {
-        if (Instance == null)
+        public static GameManager Instance { get; private set; }
+        public Transform PlayerTransform { get; private set; }
+        [SerializeField]
+        private bool isGameOver;
+
+        private void Awake()
         {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-    }
 
-    void Start()
-    {
-        _isGameOver = false;
-        
-    }
-    
+        void Start()
+        {
+            isGameOver = false;
+            PlayerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        }
 
-    public void GameOver()
-    {
-        if(_isGameOver)
-            return;
-        _isGameOver = true;
-    }
 
-    public void RestartGame()
-    {
-        SceneHandler.Instance.ReloadScene();
-    }
+        private void GameOver()
+        {
+            if(isGameOver)
+                return;
+            isGameOver = true;
+            UIManager.Instance.ShowGameOverPanel();
+        }
 
-    public void LoadScene(string sceneName)
-    {
-      //  SceneManager.LoadScene(sceneName);
-    }
+        public void RestartGame()
+        {
+            UIManager.Instance.HideGameOverPanel();
+            SceneHandler.Instance.ReloadScene();
+        }
 
-    public void QuitGame()
-    {
-        Application.Quit();
+        public void LoadScene(string sceneName)
+        {
+            //  SceneManager.LoadScene(sceneName);
+        }
+
+        public void QuitGame()
+        {
+            Application.Quit();
+        }
+
+        public void OnPlayerDeath()
+        {
+            GameOver();
+        }
+
+        public void OnPlayerTakeDamage(int currentHealth)
+        {
+            UIManager.Instance.health = currentHealth;
+            UIManager.Instance.UpdateHealth();
+        }
     }
 }

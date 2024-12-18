@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using PlayerScripts;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace EnemyScripts
 {
@@ -10,12 +12,21 @@ namespace EnemyScripts
         public List<EnemyConfigSo> enemyConfigs;
         
         [Header("Spawn Settings")]
-        public LayerMask whatIsGround; 
+        public LayerMask whatIsGround;
+        
+        [Header("Player Reference")]
+        public Transform player; 
+        public PlayerHealth playerHealth; 
         
         public LayerMask avoidLayer; 
         public float minDistanceFromPlayer = 5f; 
-        public Transform player; 
 
+        private void Awake()
+        {
+            player = Managers.PlayerManager.Instance.PlayerTransform;
+            playerHealth = Managers.PlayerManager.Instance.PlayerHealth;
+        }
+        
         private void Start()
         {
             if (enemyConfigs == null || enemyConfigs.Count == 0)
@@ -30,47 +41,65 @@ namespace EnemyScripts
             }
         }
 
+        private void SpawnEnemy(GameObject enemyPrefab, Vector3 position)
+        {
+            GameObject enemyObj = Instantiate(enemyPrefab, position, Quaternion.identity);
+            var enemyScript = enemyObj.GetComponent<Enemy>();
+            if (enemyScript != null)
+            {
+                enemyScript.Initialize(player, playerHealth);
+            }
+            
+            var enemyMovement = enemyObj.GetComponent<EnemyMovement>();
+            if (enemyMovement != null)
+            {
+                enemyMovement.SetPlayer(player);
+            }
+        }
+
         private IEnumerator SpawnEnemyRoutine(EnemyConfigSo config)
         {
             while (true)
             {
                 yield return new WaitForSeconds(config.spawnRate);
 
-                Vector3 spawnPosition = GetValidSpawnPosition();
-                if (spawnPosition != Vector3.zero)
+                Vector3 spawnPosition;
+                if (GetValidSpawnPosition(out spawnPosition))
                 {
-                    GameObject enemy = Instantiate(config.enemyPrefab, spawnPosition, Quaternion.identity);
-                    
-                    var enemyScript = enemy.GetComponent<Enemy>();
-                    if (enemyScript != null)
-                    {
-                        //enemyScript._maxHealth = config.health;
-                    }
+                    SpawnEnemy(config.enemyPrefab, spawnPosition);
                 }
             }
         }
 
-        private Vector3 GetValidSpawnPosition()
+        private bool GetValidSpawnPosition(out Vector3 spawnPosition)
         {
-            for (int i = 0; i < 10; i++) // Thử tối đa 10 lần để tìm vị trí hợp lệ
+            for (int i = 0; i < 10; i++) 
             {
                 Vector3 randomPosition = new Vector3(
-                    Random.Range(-50f, 50f), // Điều chỉnh phạm vi bản đồ
+                    Random.Range(-50f, 50f),
                     0f, 
                     Random.Range(-50f, 50f)
                 );
 
                 if (IsValidPosition(randomPosition))
                 {
-                    return randomPosition;
+                    spawnPosition = randomPosition;
+                    return true;
                 }
             }
             
-            return Vector3.zero;
+            spawnPosition = Vector3.zero;
+            return false;
+
         }
 
         private bool IsValidPosition(Vector3 position)
         {
+            if (position == Vector3.zero)
+            {
+                return false;
+            }
+            
             if (!Physics.Raycast(position + Vector3.up * 10f, Vector3.down, 20f, whatIsGround))
             {
                 return false;
@@ -87,7 +116,7 @@ namespace EnemyScripts
                 return false;
             }
 
-            return true;
+            return true; 
         }
     }
 }
