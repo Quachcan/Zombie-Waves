@@ -9,21 +9,22 @@ namespace EnemyScripts
         public float distance;
         
         public Transform player;
-        private NavMeshAgent _agent;
+        private NavMeshAgent agent;
         
-        private float _updateInterval = 0.2f;
+        private readonly float updateInterval = 0.2f;
         private void Awake()
         {
-            _agent = GetComponent<NavMeshAgent>();
+            agent = GetComponent<NavMeshAgent>();
         }
         
         public void SetPlayer(Transform playerTransform)
         {
             player = playerTransform;
         }
-        private void Start()
+
+        public void Initialize()
         {
-            InvokeRepeating(nameof(UpdateDestination), 0f, _updateInterval);
+            InvokeRepeating(nameof(UpdateDestination), 0f, updateInterval);
         }
 
         private void Update()
@@ -36,7 +37,7 @@ namespace EnemyScripts
         {
             if (player != null)
             {
-                _agent.SetDestination(player.position);
+                agent.SetDestination(player.position);
             }
         }
 

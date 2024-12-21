@@ -15,7 +15,7 @@ namespace PlayerScripts
         [SerializeField]
         private bool isImmuneToDamage;
         // Start is called before the first frame update
-        void Start()
+        public void Initialize()
         {
             currentHealth = maxHealth;
         }
@@ -42,7 +42,7 @@ namespace PlayerScripts
 
         private void Die()
         {
-            GameManager.Instance.OnPlayerDeath();
+            GameManager.Instance.GameOver();
         }
 
         private IEnumerator ImmuneToDamage()

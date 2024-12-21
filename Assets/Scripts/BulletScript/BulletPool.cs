@@ -5,7 +5,7 @@ namespace BulletScript
 {
     public class BulletPool : MonoBehaviour
     {
-        public static BulletPool Instance;
+        public static BulletPool Instance {get; private set;}
 
         [Header("Pool Settings")]
         [SerializeField] private GameObject bulletPrefab;
@@ -46,7 +46,6 @@ namespace BulletScript
             else
             {
                 // Nếu hết đối tượng trong Pool, tạo mới (tùy chọn)
-                Debug.LogWarning("Bullet Pool is empty. Expanding pool...");
                 return Instantiate(bulletPrefab);
             }
         }

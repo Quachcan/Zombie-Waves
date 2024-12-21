@@ -48,8 +48,8 @@ namespace PlayerScripts
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        
-        private void Start()
+
+        public void Initialize()
         {
             InvokeRepeating(nameof(UpdateTargetEnemy), 0f, _targetUpdateInterval);
         }
@@ -159,10 +159,6 @@ namespace PlayerScripts
                 bullet.transform.rotation = Quaternion.LookRotation(targetEnemy.transform.position - firePoint.forward);
                 bullet.SetActive(true);
             }
-            else
-            {
-                Debug.LogError("Failed to spawn bullet from pool.");
-            }
             return bullet;
         }
 
@@ -175,30 +171,6 @@ namespace PlayerScripts
                 bulletScript.Initialize(shootDirection, bulletDamage);
             }
         }
-
-        // private void OnTriggerEnter(Collider other)
-        // {
-        //     if (other.CompareTag("Enemy"))
-        //     {
-        //         Enemy enemy = other.GetComponent<Enemy>();
-        //         if (enemy != null && !enemiesInRange.Contains(enemy))
-        //         {
-        //             enemiesInRange.Add(enemy);
-        //         }
-        //     }
-        // }
-        //
-        // private void OnTriggerExit(Collider other)
-        // {
-        //     if (other.CompareTag("Enemy"))
-        //     {
-        //         Enemy enemy = other.GetComponent<Enemy>();
-        //         if (enemy != null && enemiesInRange.Contains(enemy))
-        //         {
-        //             enemiesInRange.Remove(enemy);
-        //         }
-        //     }
-        // }
         
         public void RegisterEnemy(Enemy enemy)
         {

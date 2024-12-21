@@ -8,6 +8,8 @@ namespace EnemyScripts
 {
     public class Enemy : MonoBehaviour
     {
+        public static event Action<Vector3> OnEnemyDeath;
+        
         [SerializeField]
         private EnemyMovement enemyMovement;
         [SerializeField]
@@ -23,7 +25,7 @@ namespace EnemyScripts
             playerTransform = player;
             playerHealth = health;
         }
-        private void Awake()
+        public void Init()
         {
             currentHealth = maxHealth;
             enemyMovement = GetComponent<EnemyMovement>();
@@ -53,12 +55,13 @@ namespace EnemyScripts
         private void Die()
         {
             PlayerCombat.Instance.UnregisterEnemy(this);
+            OnEnemyDeath?.Invoke(transform.position);
             Destroy(gameObject);
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag("Player") && enemyMovement.distance <= 1.5f)
+            if (other.CompareTag("Player"))
             {
                 PlayerHealth player = other.GetComponent<PlayerHealth>();
                 if (player != null)

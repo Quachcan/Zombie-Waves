@@ -26,14 +26,15 @@ namespace PlayerScripts
        private void Awake()
        {
            _playerControls = new PlayerControls();
+       }
+
+       public void Initialize()
+       {
            _characterController = GetComponent<CharacterController>();
            _animator = GetComponentInChildren<Animator>();
            _playerCombat = GetComponent<PlayerCombat>();
+           
            AnimationManager.Instance.InitializeAnimator(_animator, "IsMoving");
-       }
-
-       public void Start()
-       {
            
            _playerControls.Player.Movement.started +=  OnMovementInput;
            _playerControls.Player.Movement.canceled += OnMovementInput;

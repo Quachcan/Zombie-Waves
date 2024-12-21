@@ -20,6 +20,8 @@ namespace Managers
         public Image[] hearts;
         public Sprite fullHeart;
         public Sprite emptyHeart;
+        
+        private UI.ExpUiManager expUiManager;
 
         public int health;
 
@@ -75,13 +77,24 @@ namespace Managers
         }
 
         // Toggle pause panel visibility
-        public void TogglePausePanel()
+        public void OnPauseGame()
         {
             if (pausePanel != null)
             {
-                bool isActive = pausePanel.activeSelf;
-                pausePanel.SetActive(!isActive);
+                GameManager.Instance.PauseGame();
+                pausePanel.SetActive(true);
             }
+        }
+
+        public void OnResumeGame()
+        {
+            GameManager.Instance.ResumeGame();
+            pausePanel.SetActive(false);
+        }
+
+        public void OnRestartGame()
+        {
+            GameManager.Instance.RestartGame();
         }
 
         public void ShowGameOverPanel()
@@ -92,6 +105,14 @@ namespace Managers
         public void HideGameOverPanel()
         {
             gameOverPanel.SetActive(false);
+        }
+
+        public void UpdateExpUI(int currentExp, int expToNextLevel, int currentLevel)
+        {
+            if (expUiManager == null)
+            {
+                expUiManager.UpdateExpBar(currentExp, expToNextLevel, currentLevel);
+            }
         }
     }
 }

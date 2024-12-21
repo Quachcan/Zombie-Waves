@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using PlayerScripts;
 using UnityEngine;
-using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace EnemyScripts
 {
     public class EnemySpawner : MonoBehaviour
     {
+        public static EnemySpawner Instance {get; private set;}
+        
         [Header("Enemy Configurations")] 
         public List<EnemyConfigSo> enemyConfigs;
         
@@ -15,23 +17,30 @@ namespace EnemyScripts
         public LayerMask whatIsGround;
         
         [Header("Player Reference")]
-        public Transform player; 
+        public Transform playerTransform; 
         public PlayerHealth playerHealth; 
         
         public LayerMask avoidLayer; 
-        public float minDistanceFromPlayer = 5f; 
+        public float minDistanceFromPlayer = 5f;
+
 
         private void Awake()
         {
-            player = Managers.PlayerManager.Instance.PlayerTransform;
-            playerHealth = Managers.PlayerManager.Instance.PlayerHealth;
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+            }
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
-        
-        private void Start()
+
+        public void Initialize()
         {
+            playerTransform = Player.Instance.playerTransform;
+            playerHealth = Player.Instance.playerHealth;
+            
             if (enemyConfigs == null || enemyConfigs.Count == 0)
             {
-                Debug.LogError("No enemy configurations assigned!");
                 return;
             }
             
@@ -47,13 +56,15 @@ namespace EnemyScripts
             var enemyScript = enemyObj.GetComponent<Enemy>();
             if (enemyScript != null)
             {
-                enemyScript.Initialize(player, playerHealth);
+                enemyScript.Init();
+                enemyScript.Initialize(playerTransform, playerHealth);
             }
             
             var enemyMovement = enemyObj.GetComponent<EnemyMovement>();
             if (enemyMovement != null)
             {
-                enemyMovement.SetPlayer(player);
+                enemyMovement.Initialize();
+                enemyMovement.SetPlayer(playerTransform);
             }
         }
 
@@ -105,7 +116,7 @@ namespace EnemyScripts
                 return false;
             }
             
-            if (Vector3.Distance(position, player.position) < minDistanceFromPlayer)
+            if (Vector3.Distance(position, playerTransform.position) < minDistanceFromPlayer)
             {
                 return false;
             }
