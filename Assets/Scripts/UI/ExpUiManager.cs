@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,10 +14,11 @@ namespace UI
         public void UpdateExpBar(int currentExp, int expToNextLevel, int currentLevel)
         {
             float fillExp = (float) currentExp / expToNextLevel;
+            fillExp = Mathf.Clamp01(fillExp);
 
             if (expSlider != null)
             {
-                expSlider.value = Mathf.Lerp(expSlider.value, fillExp, Time.deltaTime * 5f);
+                expSlider.value = fillExp;
             }
 
             if (levelText != null)

@@ -46,7 +46,6 @@ namespace PlayerScripts
             }
 
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
 
         public void Initialize()

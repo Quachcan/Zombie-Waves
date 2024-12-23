@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public class TopDownCameraFollow : MonoBehaviour
 {
+    public static TopDownCameraFollow instance;
+    
     [Header("Target Settings")]
     public Transform target;
 
@@ -14,7 +17,23 @@ public class TopDownCameraFollow : MonoBehaviour
     [Header("Bounds Settings (Optional)")]
     public bool useBounds = false; 
     public Vector2 minBounds; 
-    public Vector2 maxBounds; 
+    public Vector2 maxBounds;
+
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+        }
+        instance = this;
+        DontDestroyOnLoad(gameObject);
+
+
+    }
+    public void SetTarget(Transform newTarget)
+    {
+            target = newTarget;
+    }
 
     private void LateUpdate()
     {

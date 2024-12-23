@@ -1,4 +1,5 @@
 using System;
+using DataSystem;
 using Managers;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -28,8 +29,6 @@ namespace PlayerScripts
                 Destroy(gameObject);
             }
             Instance = this;
-            DontDestroyOnLoad(this);
-            
         }
 
         public void Initialize()
@@ -42,12 +41,21 @@ namespace PlayerScripts
             playerCombat.Initialize();
             playerMovement.Initialize();
             playerHealth.Initialize();
+            RegisterComponents();
         }
 
+        private void RegisterComponents()
+        {
+            if (TopDownCameraFollow.instance != null)
+            {
+                TopDownCameraFollow.instance.SetTarget(transform);
+            }
+        }
+        
         public void AddExperience(int amount)
         {  
             currentExp += amount;
-            Debug.Log($"Player gained {amount} EXP! Current EXP: {currentExp}");
+//            Debug.Log($"Player gained {amount} EXP! Current EXP: {currentExp}");
 
             if (currentExp >= expTotNextLevel)
             {
@@ -60,7 +68,7 @@ namespace PlayerScripts
         {
             currentLevel++;
             currentExp -= expTotNextLevel;
-            expTotNextLevel += 10;
+            expTotNextLevel += 5;
             Debug.Log($"Level Up! New Level: {currentLevel}");
             NotifyExpChange();
         }
@@ -68,6 +76,25 @@ namespace PlayerScripts
         private void NotifyExpChange()
         {
             GameManager.Instance.UpdatePlayerExp(currentExp, expTotNextLevel, currentLevel);
+        }
+
+        public void SavePlayer()
+        {
+            SaveSystem.SavePlayer(this);
+        }
+
+        public void LoadPlayer()
+        {
+            PlayerData data = SaveSystem.LoadPlayer();
+            if (data != null)
+            {
+                currentLevel = data.currentLevel;
+                currentExp = data.currentExp;
+                expTotNextLevel = data.expToNextLevel;
+                
+                Vector3 position = new Vector3(data.position[0], data.position[1], data.position[2] );
+                transform.position = position;
+            }
         }
     }
 }

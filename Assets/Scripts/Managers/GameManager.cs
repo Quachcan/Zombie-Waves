@@ -1,4 +1,3 @@
-using System;
 using EnemyScripts;
 using PlayerScripts;
 using UnityEngine;
@@ -35,6 +34,7 @@ namespace Managers
             isGameOver = false;
             SetGameState(GameState.Playing);
             Initialize();
+            TimeManager.Instance.StartTimer();
         }
 
         private void Initialize()
@@ -42,7 +42,6 @@ namespace Managers
             Player.Instance.Initialize();
             PlayerCombat.Instance.Initialize();
             EnemySpawner.Instance.Initialize();
-            
         }
         
         public void GameOver()
@@ -56,12 +55,15 @@ namespace Managers
         public void RestartGame()
         {
             UIManager.Instance.HideGameOverPanel();
-            SceneManager.Instance.ReloadScene();
+            SceneManagers.Instance.ReloadScene();
         }
 
-        public void LoadScene(string sceneName)
+        public void OnTimeUp()
         {
-            //  SceneManager.LoadScene(sceneName);
+            if (isGameOver) return;
+            isGameOver = true;
+            OnPlayerWin();
+            UIManager.Instance.ShowVictoryPanel();
         }
         
         public void OnPlayerTakeDamage(int currentHealth)
@@ -70,7 +72,7 @@ namespace Managers
             UIManager.Instance.UpdateHealth();
         }
 
-        public void SetGameState(GameState newState)
+        private void SetGameState(GameState newState)
         {
             currentState = newState;
             Debug.Log($"Game state changed to {currentState}");
@@ -120,6 +122,21 @@ namespace Managers
             {
                 SetGameState(GameState.Playing);
             }
+        }
+
+        private void SaveGame()
+        {
+            Player.Instance.SavePlayer();
+        }
+
+        private void LoadGame()
+        {
+            Player.Instance.LoadPlayer();
+        }
+
+        private void OnPlayerWin()
+        {
+            SaveGame();
         }
 
         public void UpdatePlayerExp(int currentExp, int expToNextLevel, int currentLevel)

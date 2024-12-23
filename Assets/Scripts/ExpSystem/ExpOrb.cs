@@ -1,5 +1,6 @@
 using PlayerScripts;
 using UnityEngine;
+using System.Collections;
 
 namespace ExpSystem
 {
@@ -11,11 +12,22 @@ namespace ExpSystem
         public int expValue = 1;
         public float activationDistance = 5f;
         
+        [SerializeField]
         private Transform player;
         private bool isActivated;
         
-        public void Awake()
+        public void Initialize()
         {
+            StartCoroutine(WaitForPlayer());
+        }
+        
+        private IEnumerator WaitForPlayer()
+        {
+            while (Player.Instance == null)
+            {
+                yield return null; 
+            }
+
             player = Player.Instance.playerTransform;
         }
 

@@ -29,11 +29,17 @@ namespace ExpSystem
                 return;
             }
 
+            Vector3 spawnPosition = position + new Vector3(0, spawnHeightOffSet, 0);
             for (int i = 0; i < expAmount; i++)
             {
-                Vector3 spawnPosition = position + new Vector3(0, spawnHeightOffSet, 0);
             
-                Instantiate(expPrefabs, spawnPosition, Quaternion.identity);
+                GameObject expObj = Instantiate(expPrefabs, spawnPosition, Quaternion.identity);
+                    
+                ExpOrb expOrb = expObj.GetComponent<ExpOrb>();
+                if (expOrb != null)
+                {
+                    expOrb.Initialize();
+                }
             }
         }
     }

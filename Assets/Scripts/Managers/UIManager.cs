@@ -1,4 +1,5 @@
-using System;
+using TMPro;
+using UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,18 +11,22 @@ namespace Managers
 
         [Header("Panels")]
         public GameObject mainMenuPanel;
-        public GameObject settingsPanel;
+        public GameObject joyStickSettingsPanel;
         public GameObject pausePanel;
         public GameObject gameOverPanel;
+        public GameObject gameWinPanel;
+        public GameObject expCanvas;
+        public GameObject timerCanvas;
 
-        [Header("Scores")]
-        public Text scoreText;
+        [Header("Timer")]
+        public TextMeshProUGUI timerText;
         [Header("Images")]
         public Image[] hearts;
         public Sprite fullHeart;
         public Sprite emptyHeart;
         
-        private UI.ExpUiManager expUiManager;
+        [SerializeField]
+        private ExpUiManager expUiManager;
 
         public int health;
 
@@ -35,34 +40,28 @@ namespace Managers
 
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            
+            expUiManager = GetComponentInChildren<ExpUiManager>();
         }
-
-        // Show a specific panel
-        public void ShowPanel(GameObject panel)
+        
+        public void ShowPanel()
         {
-            HideAllPanels();
-            panel.SetActive(true);
+            if (joyStickSettingsPanel != null) joyStickSettingsPanel.SetActive(true);
+            if (expCanvas != null) expCanvas.SetActive(true);
+            if (timerCanvas != null) timerCanvas.SetActive(true);
         }
-
-        // Hide all panels
-        private void HideAllPanels()
+        
+        public void HideAllPanels()
         {
             if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
-            if (settingsPanel != null) settingsPanel.SetActive(false);
+            if (joyStickSettingsPanel != null) joyStickSettingsPanel.SetActive(false);
             if (pausePanel != null) pausePanel.SetActive(false);
             if (gameOverPanel != null) gameOverPanel.SetActive(false);
+            if (expCanvas != null) expCanvas.SetActive(false);
+            if (timerCanvas != null) timerCanvas.SetActive(false);
         }
-
-        // Update the score text
-        public void UpdateScore(int score)
-        {
-            if (scoreText != null)
-            {
-                scoreText.text = "Score: " + score;
-            }
-        }
-
-        // Update the health text
+        
+        
         public void UpdateHealth()
         {
             foreach (Image img in hearts)
@@ -75,8 +74,7 @@ namespace Managers
                 hearts[i].sprite = fullHeart;
             }
         }
-
-        // Toggle pause panel visibility
+        
         public void OnPauseGame()
         {
             if (pausePanel != null)
@@ -107,12 +105,23 @@ namespace Managers
             gameOverPanel.SetActive(false);
         }
 
+        public void ShowVictoryPanel()
+        {
+            gameWinPanel.SetActive(true);
+        }
+
+        public void HideGameWinPanel()
+        {
+            gameWinPanel.SetActive(false);
+        }
         public void UpdateExpUI(int currentExp, int expToNextLevel, int currentLevel)
         {
-            if (expUiManager == null)
-            {
-                expUiManager.UpdateExpBar(currentExp, expToNextLevel, currentLevel);
-            }
+            expUiManager.UpdateExpBar(currentExp, expToNextLevel, currentLevel);
+        }
+
+        public void UpdateTimerUI(int minutes, int seconds)
+        {
+            timerText.text = $"{minutes:00}:{seconds:00}";
         }
     }
 }
