@@ -19,8 +19,7 @@ namespace Managers
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-
-        // Load a scene by name
+        
         public void LoadScene(string sceneName)
         {
             if (!string.IsNullOrEmpty(sceneName))

@@ -8,7 +8,7 @@ namespace Managers
 
         private bool isTimeRunning;
         [SerializeField]
-        private float gameDuration = 300f;
+        private float gameDuration = 60f;
         [SerializeField]
         private float currentTime;
         private void Awake()

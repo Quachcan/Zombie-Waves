@@ -34,7 +34,7 @@ namespace PlayerScripts
         private float attackRange;
         [SerializeField]
         private List<Enemy> enemiesInRange = new List<Enemy>();
-        private float _targetUpdateInterval = 0.2f;
+        private float targetUpdateInterval = 0.2f;
         private List<Enemy> enemies = new List<Enemy>();
 
         private void Awake()
@@ -50,7 +50,7 @@ namespace PlayerScripts
 
         public void Initialize()
         {
-            InvokeRepeating(nameof(UpdateTargetEnemy), 0f, _targetUpdateInterval);
+            InvokeRepeating(nameof(UpdateTargetEnemy), 0f, targetUpdateInterval);
         }
         
         void Update()
