@@ -49,6 +49,7 @@ namespace Managers
             if(isGameOver)
                 return;
             isGameOver = true;
+            HandleGameOverState();
             UIManager.Instance.ShowGameOverPanel();
         }
 
@@ -62,7 +63,8 @@ namespace Managers
         {
             if (isGameOver) return;
             isGameOver = true;
-            OnPlayerWin();
+            HandleGameOverState();
+            //OnPlayerWin();
             UIManager.Instance.ShowVictoryPanel();
         }
         
@@ -105,7 +107,6 @@ namespace Managers
         private void HandleGameOverState()
         {
             Time.timeScale = 0;
-            GameOver();
         }
 
         public void PauseGame()
@@ -124,19 +125,20 @@ namespace Managers
             }
         }
 
-        private void SaveGame()
+        public void SaveGame()
         {
             Player.Instance.SavePlayer();
         }
 
-        private void LoadGame()
+        public void LoadGame()
         {
             Player.Instance.LoadPlayer();
         }
 
-        private void OnPlayerWin()
+        public void OnPlayerWin(int rewardAmount)
         {
             SaveGame();
+            CurrencyManager.Instance.AddCoin(rewardAmount);
         }
 
         public void UpdatePlayerExp(int currentExp, int expToNextLevel, int currentLevel)

@@ -1,3 +1,6 @@
+using JetBrains.Annotations;
+using UnityEngine;
+
 namespace BuffSystem
 {
     public abstract class Buff
@@ -12,8 +15,9 @@ namespace BuffSystem
             this.Player = PlayerScripts.Player.Instance;
         }
     
-        public abstract void Apply();
-    
-        public abstract void Remove();
+        public abstract void ApplyBuff(GameObject target);
+
+        public abstract void RemoveBuff(GameObject target);  
+
     }
 }

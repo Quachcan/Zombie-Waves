@@ -43,6 +43,7 @@ namespace EnemyScripts
 
         public void TakeDamage(int damage)
         {
+            if (currentHealth < 0) return;
             currentHealth -= damage;
             currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 

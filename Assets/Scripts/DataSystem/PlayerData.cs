@@ -13,7 +13,7 @@ public class PlayerData : MonoBehaviour
     {
         currentLevel = player.currentLevel;
         currentExp = player.currentExp;
-        expToNextLevel = player.expTotNextLevel;
+        expToNextLevel = player.expToNextLevel;
 
         // Lưu vị trí của Player
         position = new float[3];

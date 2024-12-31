@@ -14810,6 +14810,10 @@ MonoBehaviour:
   speed: 55
   damage: 10
   lifetime: 3
+  whatIsEnemy:
+    serializedVersion: 2
+    m_Bits: 1024
+  hasHit: 0
 --- !u!1 &7115582535482855960
 GameObject:
   m_ObjectHideFlags: 0

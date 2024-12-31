@@ -21,15 +21,15 @@ namespace PlayerScripts
         [SerializeField]
         private Transform firePoint;
         [SerializeField]
-        private float fireRate;
+        public float fireRate;
         [SerializeField]
         private float bulletSpeed;
         [SerializeField]
         private float bulletLifeTime;
         [SerializeField]
-        private float fireCooldown;
+        private float nextFireTime;
         [SerializeField] 
-        private int bulletDamage;
+        public int bulletDamage;
         [SerializeField] 
         private float attackRange;
         [SerializeField]
@@ -55,20 +55,21 @@ namespace PlayerScripts
         
         void Update()
         {
-            if (fireCooldown > 0)
+            if (nextFireTime > 0)
             {
-                fireCooldown -= Time.deltaTime;
+                nextFireTime -= Time.deltaTime;
             }
             
             if (targetEnemy != null)
             {
                 RotatePlayerTowardsTarget();
+                if (Time.time > nextFireTime)
+                {
+                    Shoot();
+                    nextFireTime = Time.time + fireRate;
+                }
             }
 
-            if (fireCooldown <= 0 && targetEnemy != null)
-            {
-                Shoot();
-            }
         }
 
         private Enemy GetClosestEnemy()
@@ -129,14 +130,12 @@ namespace PlayerScripts
         private void Shoot()
         {
             if (!CanShoot()) return;
-            RotatePlayerTowardsTarget();
 
             GameObject bullet = SpawnBullet();
             if (bullet != null)
             {
                 InitializeBullets(bullet);
             }
-            fireCooldown = fireRate;
         }
 
         private bool CanShoot()

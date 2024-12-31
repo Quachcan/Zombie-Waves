@@ -74,6 +74,11 @@ namespace Managers
                 hearts[i].sprite = fullHeart;
             }
         }
+
+        public void UpdateCoins(int totalCoins)
+        {
+
+        }
         
         public void OnPauseGame()
         {

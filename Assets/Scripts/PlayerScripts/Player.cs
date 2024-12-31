@@ -21,7 +21,7 @@ namespace PlayerScripts
         [Header("Leveling Settings")]
         public int currentLevel = 1;
         public int currentExp = 0;
-        public int expTotNextLevel = 10;
+        public int expToNextLevel = 10;
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -57,7 +57,7 @@ namespace PlayerScripts
             currentExp += amount;
 //            Debug.Log($"Player gained {amount} EXP! Current EXP: {currentExp}");
 
-            if (currentExp >= expTotNextLevel)
+            if (currentExp >= expToNextLevel)
             {
                 LevelUp();
             }
@@ -67,15 +67,15 @@ namespace PlayerScripts
         private void LevelUp() 
         {
             currentLevel++;
-            currentExp -= expTotNextLevel;
-            expTotNextLevel += 5;
+            currentExp -= expToNextLevel;
+            expToNextLevel += 5;
             Debug.Log($"Level Up! New Level: {currentLevel}");
             NotifyExpChange();
         }
 
         private void NotifyExpChange()
         {
-            GameManager.Instance.UpdatePlayerExp(currentExp, expTotNextLevel, currentLevel);
+            GameManager.Instance.UpdatePlayerExp(currentExp, expToNextLevel, currentLevel);
         }
 
         public void SavePlayer()
@@ -90,7 +90,7 @@ namespace PlayerScripts
             {
                 currentLevel = data.currentLevel;
                 currentExp = data.currentExp;
-                expTotNextLevel = data.expToNextLevel;
+                expToNextLevel = data.expToNextLevel;
                 
                 Vector3 position = new Vector3(data.position[0], data.position[1], data.position[2] );
                 transform.position = position;

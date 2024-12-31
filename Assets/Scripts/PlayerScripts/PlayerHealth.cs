@@ -22,6 +22,8 @@ namespace PlayerScripts
 
         public void TakeDamage(int damage)
         {
+            if (currentHealth < 0) return;
+
             if (isImmuneToDamage)
             {
                 return;

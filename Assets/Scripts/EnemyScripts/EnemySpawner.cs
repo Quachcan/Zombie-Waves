@@ -11,7 +11,7 @@ namespace EnemyScripts
         public static EnemySpawner Instance {get; private set;}
         
         [Header("Enemy Configurations")] 
-        public List<EnemyConfigSo> enemyConfigs;
+        public List<EnemyConfig> enemyConfigs;
         
         [Header("Spawn Settings")]
         public LayerMask whatIsGround;
@@ -68,7 +68,7 @@ namespace EnemyScripts
             }
         }
 
-        private IEnumerator SpawnEnemyRoutine(EnemyConfigSo config)
+        private IEnumerator SpawnEnemyRoutine(EnemyConfig config)
         {
             while (true)
             {
