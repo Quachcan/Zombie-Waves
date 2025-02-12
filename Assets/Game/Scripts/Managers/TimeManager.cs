@@ -1,7 +1,6 @@
-using Game.Scripts.Managers;
 using UnityEngine;
 
-namespace Managers
+namespace Game.Scripts.Managers
 {
     public class TimeManager : MonoBehaviour
     {

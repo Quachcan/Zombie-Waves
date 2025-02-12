@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HealthBuff
   m_EditorClassIdentifier: 
   buffName: 
-  buffValue: 3
+  buffValue: 1
   buffType: 3
   buffLevel: 1
   buffIcon: {fileID: 0}

@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f11bcb3c84c87674e83d0f7719ba5c66, type: 3}
   m_Name: AttackBuff
   m_EditorClassIdentifier: 
-  BuffName: AttackBuff
-  value: 10
+  buffName: 
+  buffValue: 10
+  buffType: 0
+  buffLevel: 1
+  buffIcon: {fileID: 0}

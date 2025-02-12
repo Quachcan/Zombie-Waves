@@ -1,8 +1,9 @@
 using System;
-using EnemyScripts;
+using Game.Scripts.Managers;
 using Game.Scripts.PlayerScripts;
 using PlayerScripts;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Game.Scripts.EnemyScripts
 {
@@ -19,6 +20,7 @@ namespace Game.Scripts.EnemyScripts
 
         private Transform playerTransform;
         private PlayerHealth playerHealth;
+        private EnemyConfig enemyConfig;
 
         public void Initialize(Transform player, PlayerHealth health)
         {
@@ -41,9 +43,28 @@ namespace Game.Scripts.EnemyScripts
             PlayerCombat.Instance.UnregisterEnemy(this);
         }
 
+        public void Setup(Transform player, PlayerHealth health, EnemyConfig config)
+        {
+            enemyConfig = config;
+            Init();
+            Initialize(player, health);
+
+            EnemyMovement movement = GetComponent<EnemyMovement>();
+            if (movement != null)
+            {
+                NavMeshAgent agent = GetComponent<NavMeshAgent>();
+                if (agent != null)
+                {
+                    agent.enabled = true;
+                }
+                movement.Initialize();
+                movement.SetPlayer(player);
+            }
+        }
+
         public void TakeDamage(int damage)
         {
-            if (currentHealth < 0) return;
+            if (currentHealth <= 0) return;
             currentHealth -= damage;
             currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
@@ -55,9 +76,22 @@ namespace Game.Scripts.EnemyScripts
 
         private void Die()
         {
+            if (enemyMovement != null)
+            {
+                enemyMovement.CancelInvoke();
+                NavMeshAgent agent = GetComponent<NavMeshAgent>();
+                if (agent != null)
+                {
+                    agent.enabled = false;
+                }
+            }
             PlayerCombat.Instance.UnregisterEnemy(this);
             OnEnemyDeath?.Invoke(transform.position);
-            Destroy(gameObject);
+            
+            if(enemyConfig != null)
+                EnemyPoolManager.Instance.ReturnEnemyToPool(enemyConfig, gameObject);
+            else
+                Destroy(gameObject);
         }
 
         private void OnTriggerEnter(Collider other)

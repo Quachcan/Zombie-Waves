@@ -1,6 +1,5 @@
 
 using System.Collections.Generic;
-using EnemyScripts;
 using Game.Scripts.BulletScript;
 using Game.Scripts.EnemyScripts;
 using UnityEngine;

@@ -1,4 +1,3 @@
-using EnemyScripts;
 using Game.Scripts.EnemyScripts;
 using Game.Scripts.PlayerScripts;
 using Managers;
@@ -11,6 +10,8 @@ namespace Game.Scripts.Managers
     {
         public static GameManager Instance { get; private set; }
         private GameState currentState;
+        
+        public GameState CurrentState => currentState;
         
         public PlayerMovement playerMovement;
         

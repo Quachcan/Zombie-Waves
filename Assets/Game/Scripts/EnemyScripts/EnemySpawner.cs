@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using EnemyScripts;
 using Game.Scripts.Managers;
 using Game.Scripts.PlayerScripts;
 using Managers;
@@ -53,34 +52,51 @@ namespace Game.Scripts.EnemyScripts
             }
         }
 
-        private void SpawnEnemy(GameObject enemyPrefab, Vector3 position)
+        // private void SpawnEnemy(GameObject enemyPrefab, Vector3 position)
+        // {
+        //     GameObject enemyObj = Instantiate(enemyPrefab, position, Quaternion.identity);
+        //     Enemy enemyScript = enemyObj.GetComponent<Enemy>();
+        //
+        //     if (enemyScript != null)
+        //     {
+        //         enemyScript.Setup(playerTransform, playerHealth);
+        //     }
+        //     
+        //     // if (enemyScript != null)
+        //     // {
+        //     //     enemyScript.Init();
+        //     //     enemyScript.Initialize(playerTransform, playerHealth);
+        //     // }
+        //     //
+        //     // var enemyMovement = enemyObj.GetComponent<EnemyMovement>();
+        //     // if (enemyMovement != null)
+        //     // {
+        //     //     enemyMovement.Initialize();
+        //     //     enemyMovement.SetPlayer(playerTransform);
+        //     // }
+        // }
+
+        private void SpawnEnemyFromPool(EnemyConfig config, Vector3 position)
         {
-            GameObject enemyObj = Instantiate(enemyPrefab, position, Quaternion.identity);
-            var enemyScript = enemyObj.GetComponent<Enemy>();
+            GameObject enemyObj = EnemyPoolManager.Instance.GetEnemy(config, position, Quaternion.identity);
+            Enemy enemyScript = enemyObj.GetComponent<Enemy>();
             if (enemyScript != null)
             {
-                enemyScript.Init();
-                enemyScript.Initialize(playerTransform, playerHealth);
-            }
-            
-            var enemyMovement = enemyObj.GetComponent<EnemyMovement>();
-            if (enemyMovement != null)
-            {
-                enemyMovement.Initialize();
-                enemyMovement.SetPlayer(playerTransform);
+                enemyScript.Setup(playerTransform, playerHealth, config);
             }
         }
 
         private IEnumerator SpawnEnemyRoutine(EnemyConfig config)
         {
-            while (true)
+            while (GameManager.Instance.CurrentState == GameState.Playing)
             {
                 yield return new WaitForSeconds(config.spawnRate);
 
                 Vector3 spawnPosition;
                 if (GetValidSpawnPosition(out spawnPosition))
                 {
-                    SpawnEnemy(config.enemyPrefab, spawnPosition);
+                    //SpawnEnemy(config.enemyPrefab, spawnPosition);
+                    SpawnEnemyFromPool(config, spawnPosition);
                 }
             }
         }
