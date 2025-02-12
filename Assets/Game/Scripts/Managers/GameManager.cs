@@ -1,9 +1,11 @@
 using EnemyScripts;
+using Game.Scripts.EnemyScripts;
 using Game.Scripts.PlayerScripts;
+using Managers;
 using PlayerScripts;
 using UnityEngine;
 
-namespace Managers
+namespace Game.Scripts.Managers
 {
     public class GameManager : MonoBehaviour
     {
@@ -18,16 +20,16 @@ namespace Managers
         private EnemySpawner enemySpawner;
         [SerializeField]
         private bool isGameOver;
-        
 
-        private void OnEnable()
+
+        private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
             Instance = this;
-        }
-
-        private void OnDisable()
-        {
-            Instance = null;
         }
 
         void Start()
@@ -43,6 +45,7 @@ namespace Managers
             Player.Instance.Initialize();
             PlayerCombat.Instance.Initialize();
             EnemySpawner.Instance.Initialize();
+            UIManager.Instance.Initialize();
         }
         
         public void GameOver()
@@ -68,12 +71,6 @@ namespace Managers
             //OnPlayerWin();
             UIManager.Instance.ShowVictoryPanel();
         }
-        
-        public void OnPlayerTakeDamage(int currentHealth)
-        {
-            UIManager.Instance.health = currentHealth;
-            UIManager.Instance.UpdateHealth();
-        }
 
         private void SetGameState(GameState newState)
         {
@@ -93,7 +90,11 @@ namespace Managers
                     break;
             }
         }
-        
+
+        public Bounds GetBounds()
+        {
+            return MapManager.Instance.GetMapBounds();
+        }
 
         private void HandlePlayingState()
         {

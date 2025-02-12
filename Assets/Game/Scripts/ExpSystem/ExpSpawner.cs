@@ -1,7 +1,8 @@
+using ExpSystem;
 using Game.Scripts.EnemyScripts;
 using UnityEngine;
 
-namespace ExpSystem
+namespace Game.Scripts.ExpSystem
 {
     public class ExpSpawner : MonoBehaviour
     {
@@ -26,7 +27,6 @@ namespace ExpSystem
         {
             if (expPrefabs == null)
             {
-                Debug.LogError("No exp prefabs assigned");
                 return;
             }
 

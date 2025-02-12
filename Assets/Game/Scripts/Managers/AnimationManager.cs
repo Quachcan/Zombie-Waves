@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Managers
+namespace Game.Scripts.Managers
 {
     public class AnimationManager : MonoBehaviour
     {

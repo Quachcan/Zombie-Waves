@@ -10,7 +10,7 @@ public class MovementSpeedBuff : IBuffHandler
         var playerMovement = target.GetComponent<PlayerScripts.PlayerMovement>();
         if (playerMovement != null)
         {
-            playerMovement.movementSpeed += value;
+            playerMovement.baseMovementSpeed += value;
             Debug.Log($"MovementSpeed buff applied : {value}");
         }
     }
@@ -20,7 +20,7 @@ public class MovementSpeedBuff : IBuffHandler
         var playerMovement = target.GetComponent<PlayerScripts.PlayerMovement>();
         if (playerMovement != null)
         {
-            playerMovement.movementSpeed -= value;
+            playerMovement.baseMovementSpeed -= value;
             Debug.Log($"MovementSpeed buff removed");
         }
     }

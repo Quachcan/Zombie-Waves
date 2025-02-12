@@ -1,14 +1,25 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-[CreateAssetMenu(fileName = "NewBuff", menuName = "BuffSystem/BuffConfig")]
-public class BuffConfig : ScriptableObject
+namespace Game.Scripts.BuffSystem
 {
-    public string BuffName;
-    public float value;
-    public Type BuffType;
-    
+    [CreateAssetMenu(fileName = "NewBuff", menuName = "BuffSystem/BuffConfig")]
+    public class BuffConfig : ScriptableObject
+    {
+        public string buffName;
+        public int buffValue;
+        public BuffType buffType;
+        public int buffLevel;
+        public Sprite buffIcon;
+    }
+
+    public enum BuffType
+    {
+        Attack,
+        FireRate,
+        Movement,
+        Health
+    }
 }
 

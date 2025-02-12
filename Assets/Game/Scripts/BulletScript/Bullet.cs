@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using Game.Scripts.EnemyScripts;
 
 namespace Game.Scripts.BulletScript
 {
@@ -44,7 +45,7 @@ namespace Game.Scripts.BulletScript
         {
             if (hit.collider.CompareTag("Enemy"))
             {
-                EnemyScripts.Enemy enemy = hit.collider.GetComponent<EnemyScripts.Enemy>();
+                Enemy enemy = hit.collider.GetComponent<Enemy>();
                 if(enemy != null)
                 {
                     enemy.TakeDamage(damage);

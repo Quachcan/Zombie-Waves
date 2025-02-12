@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
-using Game.Scripts.EnemyScripts;
+using EnemyScripts;
+using Game.Scripts.Managers;
 using Game.Scripts.PlayerScripts;
+using Managers;
 using PlayerScripts;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace EnemyScripts
+namespace Game.Scripts.EnemyScripts
 {
     public class EnemySpawner : MonoBehaviour
     {
@@ -33,7 +35,6 @@ namespace EnemyScripts
                 Destroy(gameObject);
             }
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
 
         public void Initialize()
@@ -86,12 +87,13 @@ namespace EnemyScripts
 
         private bool GetValidSpawnPosition(out Vector3 spawnPosition)
         {
+            Bounds mapBounds = GameManager.Instance.GetBounds();
             for (int i = 0; i < 10; i++) 
             {
                 Vector3 randomPosition = new Vector3(
-                    Random.Range(-50f, 50f),
+                    Random.Range(mapBounds.min.x, mapBounds.max.x),
                     0f, 
-                    Random.Range(-50f, 50f)
+                    Random.Range(mapBounds.min.z, mapBounds.max.z)
                 );
 
                 if (IsValidPosition(randomPosition))
@@ -112,24 +114,24 @@ namespace EnemyScripts
             {
                 return false;
             }
-            
+
             if (!Physics.Raycast(position + Vector3.up * 10f, Vector3.down, 20f, whatIsGround))
             {
                 return false;
             }
-            
+
             if (Vector3.Distance(position, playerTransform.position) < minDistanceFromPlayer)
             {
                 return false;
             }
-            
+
             Collider[] colliders = Physics.OverlapSphere(position, 1f, avoidLayer);
             if (colliders.Length > 0)
             {
                 return false;
             }
 
-            return true; 
+            return true;
         }
     }
 }

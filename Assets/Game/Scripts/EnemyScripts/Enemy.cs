@@ -1,5 +1,6 @@
 using System;
 using EnemyScripts;
+using Game.Scripts.PlayerScripts;
 using PlayerScripts;
 using UnityEngine;
 

@@ -1,3 +1,4 @@
+using Game.Scripts.Managers;
 using Managers;
 using PlayerScripts;
 using UnityEngine;
@@ -20,13 +21,18 @@ namespace PlayerScripts
        [SerializeField]
        private float rotationSpeed = 30f;
        
-       public float movementSpeed = 5f;
+       public float baseMovementSpeed = 5f;
+       
+       [SerializeField]
+       private float currentMovementSpeed;
        [SerializeField]
        private bool isShooting;
 
        private void Awake()
        {
            playerControls = new PlayerControls();
+           
+           currentMovementSpeed = baseMovementSpeed;
        }
 
        public void Initialize()
@@ -73,7 +79,7 @@ namespace PlayerScripts
        {
            Vector3 movement = currentMovement;
            movement.y = -1f; // Gravity
-           characterController.Move(movement * (movementSpeed * Time.deltaTime));
+           characterController.Move(movement * (currentMovementSpeed * Time.deltaTime));
        }
        
        private void HandleCombatRotation()
@@ -105,7 +111,12 @@ namespace PlayerScripts
        {
            AnimationManager.Instance.SetBool(animator, "IsMoving", isMovementPressed);
        }
-       
+
+       public void IncreaseMovementSpeed(float amount)
+       {
+           currentMovementSpeed += amount;
+           Debug.Log("Movement speed Increased" + baseMovementSpeed);
+       }
        
        private void OnEnable()
        {

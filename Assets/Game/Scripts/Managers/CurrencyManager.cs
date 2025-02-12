@@ -1,6 +1,7 @@
 using Managers;
 using System.Collections;
 using System.Collections.Generic;
+using Game.Scripts.Managers;
 using UnityEngine;
 
 public class CurrencyManager : MonoBehaviour

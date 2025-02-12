@@ -1,9 +1,11 @@
+using System.Collections.Generic;
+using Game.Scripts.PlayerScripts;
 using TMPro;
 using UI;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Managers
+namespace Game.Scripts.Managers
 {
     public class UIManager : MonoBehaviour
     {
@@ -21,9 +23,12 @@ namespace Managers
         [Header("Timer")]
         public TextMeshProUGUI timerText;
         [Header("Images")]
-        public Image[] hearts;
         public Sprite fullHeart;
         public Sprite emptyHeart;
+        public GameObject heartPrefab;
+        public Transform heartsParent;
+        
+        public List<Image> hearts;
         
         [SerializeField]
         private ExpUiManager expUiManager;
@@ -43,6 +48,17 @@ namespace Managers
             
             expUiManager = GetComponentInChildren<ExpUiManager>();
         }
+
+        public void Initialize()
+        {
+            SetupHearts(Player.Instance.playerHealth.MaxHealth);
+            
+            health = Player.Instance.playerHealth.CurrentHealth;
+            UpdateHealthDisplay(health);
+            
+            Player.Instance.playerHealth.OnMaxHealthChanged += OnMaxHealthChanged;
+            Player.Instance.playerHealth.OnCurrentHealthChanged += OnCurrentHealthChanged;
+        }
         
         public void ShowPanel()
         {
@@ -60,16 +76,58 @@ namespace Managers
             if (expCanvas != null) expCanvas.SetActive(false);
             if (timerCanvas != null) timerCanvas.SetActive(false);
         }
-        
-        
-        public void UpdateHealth()
+
+        private void SetupHearts(int maxHealth)
         {
+            foreach (Transform child in heartsParent)
+            {
+                Destroy(child.gameObject);
+            }
+            
+            if(hearts == null)
+                hearts = new List<Image>();
+            else 
+                hearts.Clear();
+            
+            for (int i = 0; i < maxHealth; i++)
+            {
+                GameObject heartObj = Instantiate(heartPrefab, heartsParent);
+                heartObj.transform.SetAsFirstSibling();
+                hearts.Add(heartObj.GetComponent<Image>());
+            }
+            
+            health = Player.Instance.playerHealth.MaxHealth;
+        }
+
+        private void OnMaxHealthChanged(int maxHealth)
+        {
+            SetupHearts(maxHealth);
+            UpdateHealthDisplay(Player.Instance.playerHealth.CurrentHealth);
+        }
+
+        private void OnCurrentHealthChanged(int currentHealth)
+        {
+            health = currentHealth;
+            UpdateHealthDisplay(currentHealth);
+        }
+
+        private void UpdateHealthDisplay(int currentHealth)
+        {
+            for (int i = 0; i < hearts.Count; i++)
+            {
+                if (hearts[i] == null)
+                {
+                    Debug.LogWarning($"Phần tử tại index {i} là null!");
+                }
+            }
+            
             foreach (Image img in hearts)
             {
-                img.sprite = emptyHeart;
+                if(img != null)
+                    img.sprite = emptyHeart;
             }
 
-            for (int i = 0; i < health && i < hearts.Length; i++)
+            for (int i = 0; i < currentHealth && i < hearts.Count; i++)
             {
                 hearts[i].sprite = fullHeart;
             }

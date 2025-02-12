@@ -186,5 +186,18 @@ namespace PlayerScripts
                 enemies.Remove(enemy);
             }
         }
+
+        public void IncreaseDamage(int amount)
+        {
+            bulletDamage += amount;
+            Debug.Log("Increased damage: " + amount);
+        }
+
+        public void IncreaseFireRate(int amount)
+        {
+            fireRate -= amount;
+            fireRate = Mathf.Max(0.05f, fireRate);
+            Debug.Log("Increased fire rate: " + fireRate);
+        }
     }
 }

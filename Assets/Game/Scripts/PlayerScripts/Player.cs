@@ -1,4 +1,9 @@
+using System;
+using System.Collections.Generic;
 using DataSystem;
+using Game.Scripts.BuffSystem;
+using Game.Scripts.Camera;
+using Game.Scripts.Managers;
 using Managers;
 using PlayerScripts;
 using UnityEngine;
@@ -20,6 +25,7 @@ namespace Game.Scripts.PlayerScripts
         public int currentLevel = 1;
         public int currentExp = 0;
         public int expToNextLevel = 10;
+        public static event Action<int> OnLevelUp;
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -44,9 +50,9 @@ namespace Game.Scripts.PlayerScripts
 
         private void RegisterComponents()
         {
-            if (TopDownCameraFollow.instance != null)
+            if (CameraFollow.Instance != null)
             {
-                TopDownCameraFollow.instance.SetTarget(transform);
+                CameraFollow.Instance.SetTarget(transform);
             }
         }
         
@@ -67,6 +73,12 @@ namespace Game.Scripts.PlayerScripts
             currentExp -= expToNextLevel;
             expToNextLevel += 5;
             Debug.Log($"Level Up! New Level: {currentLevel}");
+            OnLevelUp?.Invoke(currentLevel);
+            List<BuffConfig> selectedBuff = BuffManager.Instance.GetRandomBuffs();
+            foreach (BuffConfig buff in selectedBuff)
+            {
+                BuffManager.Instance.ApplyBuff(buff);
+            }
             NotifyExpChange();
         }
 
