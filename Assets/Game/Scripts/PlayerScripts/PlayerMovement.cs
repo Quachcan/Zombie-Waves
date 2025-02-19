@@ -1,4 +1,5 @@
 using Game.Scripts.Managers;
+using Game.Scripts.PlayerScripts;
 using Managers;
 using PlayerScripts;
 using UnityEngine;
@@ -41,7 +42,7 @@ namespace PlayerScripts
            animator = GetComponentInChildren<Animator>();
            playerCombat = GetComponent<PlayerCombat>();
            
-           AnimationManager.Instance.InitializeAnimator(animator, "IsMoving");
+           Player.Instance.animationManager.InitializeAnimator(animator, "IsMoving");
            
            playerControls.Player.Movement.started +=  OnMovementInput;
            playerControls.Player.Movement.canceled += OnMovementInput;
@@ -109,7 +110,7 @@ namespace PlayerScripts
 
        private void HandleAnimation()
        {
-           AnimationManager.Instance.SetBool(animator, "IsMoving", isMovementPressed);
+           Player.Instance.animationManager.SetBool(animator, "IsMoving", isMovementPressed);
        }
 
        public void IncreaseMovementSpeed(float amount)

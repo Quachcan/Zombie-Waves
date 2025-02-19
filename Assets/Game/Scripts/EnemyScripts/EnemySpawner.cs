@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Game.Scripts.EnemyScripts.Elite_Enemy;
+using Game.Scripts.EnemyScripts.RegularEnemy;
 using Game.Scripts.Managers;
+using Game.Scripts.Map;
 using Game.Scripts.PlayerScripts;
-using Managers;
-using PlayerScripts;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -14,7 +16,7 @@ namespace Game.Scripts.EnemyScripts
         public static EnemySpawner Instance {get; private set;}
         
         [Header("Enemy Configurations")] 
-        public List<EnemyConfig> enemyConfigs;
+        public List<RegularEnemyConfig> enemyConfigs;
         
         [Header("Spawn Settings")]
         public LayerMask whatIsGround;
@@ -36,47 +38,30 @@ namespace Game.Scripts.EnemyScripts
             Instance = this;
         }
 
+        private void OnEnable()
+        {
+            TimeManager.Instance.OnHalfTimeReached += SpawnEliteEnemy;
+        }
+
+        private void OnDisable()
+        {
+            TimeManager.Instance.OnHalfTimeReached -= SpawnEliteEnemy;
+        }
+
         public void Initialize()
         {
             playerTransform = Player.Instance.playerTransform;
             playerHealth = Player.Instance.playerHealth;
             
-            if (enemyConfigs == null || enemyConfigs.Count == 0)
-            {
-                return;
-            }
+            MapConfig mapConfig = MapManager.Instance.MapConfig;
             
-            foreach (var config in enemyConfigs)
+            foreach (var config in mapConfig.regularEnemyConfigs)
             {
-                StartCoroutine(SpawnEnemyRoutine(config));
+                StartCoroutine(SpawnEnemyCoroutine(config));
             }
         }
-
-        // private void SpawnEnemy(GameObject enemyPrefab, Vector3 position)
-        // {
-        //     GameObject enemyObj = Instantiate(enemyPrefab, position, Quaternion.identity);
-        //     Enemy enemyScript = enemyObj.GetComponent<Enemy>();
-        //
-        //     if (enemyScript != null)
-        //     {
-        //         enemyScript.Setup(playerTransform, playerHealth);
-        //     }
-        //     
-        //     // if (enemyScript != null)
-        //     // {
-        //     //     enemyScript.Init();
-        //     //     enemyScript.Initialize(playerTransform, playerHealth);
-        //     // }
-        //     //
-        //     // var enemyMovement = enemyObj.GetComponent<EnemyMovement>();
-        //     // if (enemyMovement != null)
-        //     // {
-        //     //     enemyMovement.Initialize();
-        //     //     enemyMovement.SetPlayer(playerTransform);
-        //     // }
-        // }
-
-        private void SpawnEnemyFromPool(EnemyConfig config, Vector3 position)
+        
+        private void SpawnEnemyFromPool(RegularEnemyConfig config, Vector3 position)
         {
             GameObject enemyObj = EnemyPoolManager.Instance.GetEnemy(config, position, Quaternion.identity);
             Enemy enemyScript = enemyObj.GetComponent<Enemy>();
@@ -86,17 +71,50 @@ namespace Game.Scripts.EnemyScripts
             }
         }
 
-        private IEnumerator SpawnEnemyRoutine(EnemyConfig config)
+        // ReSharper disable Unity.PerformanceAnalysis
+        private IEnumerator SpawnEnemyCoroutine(RegularEnemyConfig config)
         {
             while (GameManager.Instance.CurrentState == GameState.Playing)
             {
                 yield return new WaitForSeconds(config.spawnRate);
 
-                Vector3 spawnPosition;
-                if (GetValidSpawnPosition(out spawnPosition))
+                if (GetValidSpawnPosition(out var spawnPosition))
                 {
-                    //SpawnEnemy(config.enemyPrefab, spawnPosition);
                     SpawnEnemyFromPool(config, spawnPosition);
+                }
+            }
+        }
+
+        // ReSharper disable Unity.PerformanceAnalysis
+        private void SpawnEliteEnemy()
+        {
+            MapConfig mapConfig = MapManager.Instance.MapConfig;
+            if (mapConfig is null || mapConfig.eliteEnemyConfigs.Count == 0)
+            {
+                return;
+            }
+
+            EliteEnemyConfig config = mapConfig.eliteEnemyConfigs[0];
+            if (GetValidSpawnPosition(out var spawnPosition))
+            {
+                GameObject gameObj = Instantiate(config.enemyPrefab, spawnPosition, Quaternion.identity);
+                EliteEnemy enemyScript = gameObj.GetComponent<EliteEnemy>();
+                if (enemyScript is not null)
+                {
+                    enemyScript.Setup(playerTransform, playerHealth, config);
+                }
+            }
+        }
+
+        public void SpawnBossEnemy(BossConfig config)
+        {
+            if (GetValidSpawnPosition(out var spawnPosition))
+            {
+                GameObject gameObj = Instantiate(config.enemyPrefab, spawnPosition, Quaternion.identity);
+                Enemy enemyScript = GetComponent<Enemy>();
+                if (enemyScript)
+                {
+                    enemyScript.Setup(playerTransform, playerHealth, config);
                 }
             }
         }
@@ -141,6 +159,7 @@ namespace Game.Scripts.EnemyScripts
                 return false;
             }
 
+            // ReSharper disable once Unity.PreferNonAllocApi
             Collider[] colliders = Physics.OverlapSphere(position, 1f, avoidLayer);
             if (colliders.Length > 0)
             {

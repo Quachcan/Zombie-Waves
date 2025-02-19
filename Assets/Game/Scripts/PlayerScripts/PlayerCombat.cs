@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Game.Scripts.BulletScript;
 using Game.Scripts.EnemyScripts;
+using Game.Scripts.EnemyScripts.RegularEnemy;
 using UnityEngine;
 
 

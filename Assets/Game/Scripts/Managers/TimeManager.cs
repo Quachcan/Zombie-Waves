@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Game.Scripts.Managers
@@ -6,21 +7,18 @@ namespace Game.Scripts.Managers
     {
         public static TimeManager Instance { get; private set; }
 
+        public event Action OnHalfTimeReached;
+        public event Action OnThirdTimeReached;
+        
         private bool isTimeRunning;
-        [SerializeField]
-        private float gameDuration = 60f;
-        [SerializeField]
-        private float currentTime;
+        [SerializeField] private float gameDuration = 60f;
+        [SerializeField] private float currentTime;
+        
+        private bool halfTimeReached;
+        private bool thirdTimeReached;
         private void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
             Instance = this;
-            DontDestroyOnLoad(gameObject);
             
             ResetTimer();
         }
@@ -47,6 +45,18 @@ namespace Game.Scripts.Managers
         {
             currentTime -= Time.deltaTime;
 
+            if (!halfTimeReached && currentTime <= gameDuration / 2f)
+            {
+                halfTimeReached = true;
+                OnHalfTimeReached?.Invoke();
+            }
+
+            if (!thirdTimeReached && currentTime <= gameDuration / 3f)
+            {
+                thirdTimeReached = true;
+                OnThirdTimeReached?.Invoke();
+            }
+
             if (currentTime <= 0)
             {
                 currentTime = 0f;
@@ -58,7 +68,7 @@ namespace Game.Scripts.Managers
 
         private void NotifyUIManager()
         {
-            if (UIManager.Instance == null)
+            if (UIManager.Instance is null)
             {
                 return;
             }
@@ -70,6 +80,8 @@ namespace Game.Scripts.Managers
         private void ResetTimer()
         {
             currentTime = gameDuration;
+            halfTimeReached = false;
+            thirdTimeReached = false;
             StopTimer();
             NotifyUIManager();
         }

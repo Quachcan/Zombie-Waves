@@ -4,7 +4,6 @@ using DataSystem;
 using Game.Scripts.BuffSystem;
 using Game.Scripts.Camera;
 using Game.Scripts.Managers;
-using Managers;
 using PlayerScripts;
 using UnityEngine;
 
@@ -18,7 +17,7 @@ namespace Game.Scripts.PlayerScripts
         public PlayerHealth playerHealth;
         public PlayerMovement playerMovement;
         public PlayerCombat playerCombat;
-        
+        public AnimationManager animationManager;
         
         
         [Header("Leveling Settings")]
@@ -28,10 +27,6 @@ namespace Game.Scripts.PlayerScripts
         public static event Action<int> OnLevelUp;
         private void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-            }
             Instance = this;
         }
 
@@ -41,6 +36,7 @@ namespace Game.Scripts.PlayerScripts
             playerHealth = GetComponent<PlayerHealth>();
             playerMovement = GetComponent<PlayerMovement>();
             playerCombat = GetComponent<PlayerCombat>();
+            animationManager = GetComponent<AnimationManager>();
             
             playerCombat.Initialize();
             playerMovement.Initialize();

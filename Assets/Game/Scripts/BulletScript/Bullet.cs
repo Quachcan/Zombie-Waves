@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using Game.Scripts.EnemyScripts;
+using Game.Scripts.EnemyScripts.RegularEnemy;
 
 namespace Game.Scripts.BulletScript
 {

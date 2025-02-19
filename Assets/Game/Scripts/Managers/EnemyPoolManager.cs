@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO.Pipes;
 using Game.Scripts.EnemyScripts;
 using UnityEngine;
 
@@ -10,15 +11,35 @@ namespace Game.Scripts.Managers
         
         public int poolSize;
         
-        private Dictionary<EnemyConfig, Stack<GameObject>> pools = new Dictionary<EnemyConfig, Stack<GameObject>>();
+        private readonly Dictionary<BaseEnemyConfig, Stack<GameObject>> pools = new Dictionary<BaseEnemyConfig, Stack<GameObject>>();
 
         private void Awake()
         {
             Instance = this;
         }
 
-        public GameObject GetEnemy(EnemyConfig config, Vector3 position, Quaternion rotation)
+        public GameObject GetPrefab(BaseEnemyConfig config)
         {
+            if (config.enemyPrefab is null)
+            {
+                if(string.IsNullOrEmpty(config.resourcePath))
+                    Debug.LogError("Resource path is not set in config" + config.name);
+            }
+            
+            config.enemyPrefab = Resources.Load<GameObject>(config.resourcePath);
+            if (config.enemyPrefab is null)
+            {
+                Debug.LogError($"{config.resourcePath} not found");
+            }
+
+            return config.enemyPrefab;
+        }
+
+        public GameObject GetEnemy(BaseEnemyConfig config, Vector3 position, Quaternion rotation)
+        {
+            GameObject prefab = GetPrefab(config);
+            if(prefab is null) return null;
+            
             if (!pools.ContainsKey(config))
             {
                 pools.Add(config, new Stack<GameObject>());
@@ -46,7 +67,7 @@ namespace Game.Scripts.Managers
             return enemyFromPool;
         }
 
-        public void ReturnEnemyToPool(EnemyConfig config, GameObject enemyObj)
+        public void ReturnEnemyToPool(BaseEnemyConfig config, GameObject enemyObj)
         {
             enemyObj.SetActive(false);
             if (!pools.ContainsKey(config))

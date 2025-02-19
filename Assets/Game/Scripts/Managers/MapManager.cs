@@ -1,5 +1,7 @@
 using System;
+using Game.Scripts.Map;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Game.Scripts.Managers
 {
@@ -7,15 +9,22 @@ namespace Game.Scripts.Managers
     {
         public static MapManager Instance { get; private set; }
         private Bounds mapBounds;
+
+        [SerializeField] private MapConfig mapConfig;
+        public MapConfig MapConfig => mapConfig;
         
         private void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
             Instance = this;
+            DontDestroyOnLoad(gameObject);
+            
+            string sceneName = SceneManager.GetActiveScene().name;
+            string configPath = "MapConfigs/" + sceneName + "Config";
+            mapConfig = Resources.Load<MapConfig>(configPath);
+            if (mapConfig is null)
+            {
+                Debug.LogError($"Map config not found: {configPath}");
+            }
             
             CalculateMapBounds();
         }
@@ -48,12 +57,10 @@ namespace Game.Scripts.Managers
                     max = Vector3.Max(max, mapObject.transform.position);
                 }
             }
-            //mapBounds = new Bounds((min + max) / 2, max - min + new Vector3(5, 0, 5));
             Vector3 center = (min + max) / 2;
             Vector3 size = max - min;
             
             mapBounds = new Bounds(center, size);
-            //Debug.Log($"✅ Map Bounds Calculated: Center = {mapBounds.center}, Size = {mapBounds.size}");
         }
         
         public Bounds GetMapBounds() => mapBounds;

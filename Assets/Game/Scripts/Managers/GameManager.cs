@@ -1,8 +1,10 @@
 using Game.Scripts.EnemyScripts;
+using Game.Scripts.EnemyScripts.RegularEnemy;
 using Game.Scripts.PlayerScripts;
 using Managers;
 using PlayerScripts;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Game.Scripts.Managers
 {
@@ -10,10 +12,15 @@ namespace Game.Scripts.Managers
     {
         public static GameManager Instance { get; private set; }
         private GameState currentState;
-        
         public GameState CurrentState => currentState;
         
-        public PlayerMovement playerMovement;
+        [Header("Managers")]
+        public UIManager uIManager;
+        public MapManager mapManager;
+        public TimeManager timeManager;
+        public SceneLoaderManagers sceneLoaderManagers;
+        public BuffManager buffManager;
+        public EnemyPoolManager enemyPoolManager;
         
         [SerializeField]
         private EnemyMovement enemyMovement;
@@ -31,6 +38,7 @@ namespace Game.Scripts.Managers
                 return;
             }
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
 
         void Start()
@@ -61,7 +69,7 @@ namespace Game.Scripts.Managers
         public void RestartGame()
         {
             UIManager.Instance.HideGameOverPanel();
-            SceneManagers.Instance.ReloadScene();
+            SceneLoaderManagers.Instance.ReloadScene();
         }
 
         public void OnTimeUp()

@@ -1,3 +1,4 @@
+using Game.Scripts.Managers;
 using Managers;
 using UnityEngine;
 using SceneManager = UnityEngine.SceneManagement.SceneManager;
@@ -6,7 +7,7 @@ public class MainMenu : MonoBehaviour
 {
     public void PlayGame()
     {
-        SceneManagers.Instance.LoadScene("GameScene_01");
+        SceneLoaderManagers.Instance.LoadScene("GameScene_01");
     }
 
     public void QuitGame()

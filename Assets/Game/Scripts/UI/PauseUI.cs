@@ -16,7 +16,7 @@ public class PauseUI : MonoBehaviour
 
     public void OnMainMenu()
     {
-        SceneManagers.Instance.LoadScene("StartScene");
+        SceneLoaderManagers.Instance.LoadScene("StartScene");
         UIManager.Instance.HideAllPanels();
     }
 
