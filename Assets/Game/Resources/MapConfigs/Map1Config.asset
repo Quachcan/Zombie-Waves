@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Map1Config
   m_EditorClassIdentifier: 
   regularEnemyConfigs:
-  - {fileID: 11400000, guid: 4fc1e4507384c45ea84f8ce480e5c4e3, type: 2}
-  - {fileID: 11400000, guid: 5e14f492c07754cc1a27337b29da3385, type: 2}
+  - {fileID: 11400000, guid: 708ce1cf84f602b4993438ef8c007111, type: 2}
+  - {fileID: 11400000, guid: 5a920bff90e9d3545a575b0998b3b55f, type: 2}
   eliteEnemyConfigs: []
   bossConfigs: []

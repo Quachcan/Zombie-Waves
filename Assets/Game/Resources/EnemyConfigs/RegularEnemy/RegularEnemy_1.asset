@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: RegularEnemy3
+  m_Script: {fileID: 11500000, guid: 2454c155524e07249957418ac10adedd, type: 3}
+  m_Name: RegularEnemy_1
   m_EditorClassIdentifier: Assembly-CSharp:Game.Scripts.EnemyScripts:RegularEnemyConfig
   enemyPrefab: {fileID: 4042098746908934205, guid: 5a9d2e2f1827f4f6dab2d9252131bed8, type: 3}
   resourcePath: Prefab/Enemies/RegularEnemy/Enemy_3
   health: 10
   damage: 1
-  moveSpeed: 0
+  moveSpeed: 5
   spawnRate: 1

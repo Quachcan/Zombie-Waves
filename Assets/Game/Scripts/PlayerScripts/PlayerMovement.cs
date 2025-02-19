@@ -79,7 +79,7 @@ namespace PlayerScripts
        private void HandleMovement()
        {
            Vector3 movement = currentMovement;
-           movement.y = -1f; // Gravity
+           movement.y = -9.8f; // Gravity
            characterController.Move(movement * (currentMovementSpeed * Time.deltaTime));
        }
        

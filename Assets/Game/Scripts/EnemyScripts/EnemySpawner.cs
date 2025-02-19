@@ -52,7 +52,7 @@ namespace Game.Scripts.EnemyScripts
         {
             playerTransform = Player.Instance.playerTransform;
             playerHealth = Player.Instance.playerHealth;
-            
+
             MapConfig mapConfig = MapManager.Instance.MapConfig;
             
             foreach (var config in mapConfig.regularEnemyConfigs)

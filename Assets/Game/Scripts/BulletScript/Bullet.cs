@@ -31,7 +31,7 @@ namespace Game.Scripts.BulletScript
         {
             float distance = speed * Time.deltaTime;
 
-            if (Physics.Raycast(transform.position, direction, out RaycastHit hit, distance, whatIsEnemy))
+            if (Physics.Raycast(transform.position, direction, out RaycastHit hit, distance, whatIsEnemy, QueryTriggerInteraction.Collide))
             {
                 lastHit = hit;
                 hasHit = true;
@@ -46,9 +46,11 @@ namespace Game.Scripts.BulletScript
         {
             if (hit.collider.CompareTag("Enemy"))
             {
-                Enemy enemy = hit.collider.GetComponent<Enemy>();
+                Enemy enemy = hit.collider.GetComponentInParent<Enemy>();
                 if(enemy != null)
                 {
+                    //Vector3 targetPoint = enemy.hitPoint != null ? enemy.hitPoint.position : hit.point;
+
                     enemy.TakeDamage(damage);
                 }
             }

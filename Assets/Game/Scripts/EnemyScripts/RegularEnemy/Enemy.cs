@@ -22,6 +22,8 @@ namespace Game.Scripts.EnemyScripts.RegularEnemy
         private PlayerHealth playerHealth;
         private BaseEnemyConfig baseEnemyConfig;
 
+        public Transform hitPoint;
+
         public void Initialize(Transform player, PlayerHealth health)
         {
             playerTransform = player;

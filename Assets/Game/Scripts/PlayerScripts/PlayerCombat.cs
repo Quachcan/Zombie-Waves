@@ -1,4 +1,4 @@
-
+﻿
 using System.Collections.Generic;
 using Game.Scripts.BulletScript;
 using Game.Scripts.EnemyScripts;
@@ -34,9 +34,9 @@ namespace PlayerScripts
         [SerializeField] 
         private float attackRange;
         [SerializeField]
-        private List<Enemy> enemiesInRange = new List<Enemy>();
-        private float targetUpdateInterval = 0.2f;
         private List<Enemy> enemies = new List<Enemy>();
+        //private List<Enemy> enemiesInRange = new List<Enemy>();
+        private float targetUpdateInterval = 0.2f;
 
         private void Awake()
         {
@@ -66,9 +66,19 @@ namespace PlayerScripts
                 RotatePlayerTowardsTarget();
                 if (Time.time > nextFireTime)
                 {
-                    Shoot();
-                    nextFireTime = Time.time + fireRate;
+                    if(CanShoot())
+                    {
+                        Shoot();
+                        nextFireTime = Time.time + fireRate;
+                    }
+                    else
+                    {
+                        // Debug log để kiểm tra góc
+                        float angle = Vector3.Angle(firePoint.forward, (GetEnemyTargetPoint(targetEnemy) - firePoint.position).normalized);
+                        Debug.Log("Không bắn vì góc = " + angle);
+                    }
                 }
+                
             }
 
         }
@@ -93,14 +103,29 @@ namespace PlayerScripts
             return closestEnemy;
         }
 
+        private Vector3 GetEnemyTargetPoint(Enemy enemy)
+        {
+            if (enemy != null && enemy.hitPoint != null)
+            {
+                return enemy.hitPoint.position;
+            }
+            return enemy != null ? enemy.transform.position : Vector3.zero;
+        }
+
+
         private void UpdateTargetEnemy()
         {
             targetEnemy = GetClosestEnemy();
+            if (targetEnemy != null)
+            {
+                Debug.Log("Target enemy updated: " + targetEnemy.name);
+            }
         }
 
         private void RotatePlayerTowardsTarget()
         {
-            Vector3 direction = (targetEnemy.transform.position - transform.position).normalized;
+            Vector3 targetPoint = GetEnemyTargetPoint(targetEnemy);
+            Vector3 direction = (targetPoint - firePoint.position).normalized;
             direction.y = 0;
             
             Quaternion lookRotation = Quaternion.LookRotation(direction);
@@ -123,7 +148,7 @@ namespace PlayerScripts
         public Vector3 GetTargetDirection()
         {
             if (targetEnemy == null) return Vector3.zero;
-            Vector3 direction = (targetEnemy.transform.position - transform.position).normalized;
+            Vector3 direction = (GetEnemyTargetPoint(targetEnemy) - transform.position).normalized;
             direction.y = 0;
             return direction;
         }
@@ -143,10 +168,10 @@ namespace PlayerScripts
         {
             if (targetEnemy == null) return false;
             
-            Vector3 directionToTarget = (targetEnemy.transform.position - transform.position).normalized;
-            float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
+            Vector3 directionToTarget = (GetEnemyTargetPoint(targetEnemy) - firePoint.position).normalized;
+            float angleToTarget = Vector3.Angle(firePoint.forward, directionToTarget);
             
-            return angleToTarget <= 5f;
+            return angleToTarget <= 15f;
         }
 
         private GameObject SpawnBullet()
@@ -155,7 +180,8 @@ namespace PlayerScripts
             if (bullet != null)
             {
                 bullet.transform.position = firePoint.position;
-                bullet.transform.rotation = Quaternion.LookRotation(targetEnemy.transform.position - firePoint.forward);
+                Vector3 targetPoint = GetEnemyTargetPoint(targetEnemy);
+                bullet.transform.rotation = Quaternion.LookRotation(targetPoint - firePoint.position);
                 bullet.SetActive(true);
             }
             return bullet;
@@ -166,7 +192,8 @@ namespace PlayerScripts
             Bullet bulletScript = bullet.GetComponent<Bullet>();
             if (bulletScript != null)
             {
-                Vector3 shootDirection = (targetEnemy.transform.position - firePoint.position).normalized;
+                Vector3 targetPoint = GetEnemyTargetPoint(targetEnemy);
+                Vector3 shootDirection = (targetPoint - firePoint.position).normalized;
                 bulletScript.Initialize(shootDirection, bulletDamage);
             }
         }
